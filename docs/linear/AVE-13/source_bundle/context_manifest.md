@@ -45,7 +45,7 @@ No GPT Pro/source attachments were provided by TJ for AVE-13. The plan is ground
   - `test/routes/google-business-profile.test.ts`
   - Google/Facebook launch and parameter tests.
 
-### Frontend: `Aventor-Git/Aventor`
+### Frontend: `Aventor-Apps/Aventor`
 
 - Baseline `origin/main`: `936d119a2d4c06c1deb8f63cf960e00ab8d07bed` at planning time.
 - Graphify report inspected: `graphify-out/GRAPH_REPORT.md`.

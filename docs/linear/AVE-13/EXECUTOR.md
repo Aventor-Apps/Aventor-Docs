@@ -26,7 +26,7 @@ Primary implementation repo:
 Secondary repos:
 
 - `/home/openclawsvc/repos/aventor`
-- Remote: `https://github.com/Aventor-Git/Aventor.git`
+- Remote: `https://github.com/Aventor-Apps/Aventor.git`
 - Use only for frontend contract plumbing if needed.
 
 - `/home/openclawsvc/repos/Aventor-Docs`

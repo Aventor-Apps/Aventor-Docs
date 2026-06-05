@@ -13,7 +13,7 @@ Groomed AVE-13 for local-Codex execution.
 **Repos / docs roots:**
 
 - Backend primary: `Aventor-Apps/Aventor-backend` — `docs/linear/AVE-13/`
-- Frontend secondary: `Aventor-Git/Aventor` — `docs/linear/AVE-13/` if frontend contract plumbing is needed
+- Frontend secondary: `Aventor-Apps/Aventor` — `docs/linear/AVE-13/` if frontend contract plumbing is needed
 - Docs secondary: `Aventor-Apps/Aventor-Docs` — `docs/linear/AVE-13/` plus docs-site implementation changes
 
 **Plan docs:**

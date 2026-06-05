@@ -87,7 +87,7 @@ Status: auditable brainstorm / grill log for the AVE-13 local-Codex handoff. Thi
 
 ### Git / repo baseline
 
-- Frontend repo `/home/openclawsvc/repos/aventor`: remote `https://github.com/Aventor-Git/Aventor.git`, current checkout on unrelated `fix/ave-31-uploaded-image-edit-clean`, HEAD `292c2aa`, `origin/main` `936d119a2d4c06c1deb8f63cf960e00ab8d07bed`; untracked `.hermes/`, `docs/linear/CTC-102/qa-artifacts/`, and `graphify-out/`. Use an AVE-13 branch/worktree from `origin/main` for final docs; do not disturb the active unrelated branch.
+- Frontend repo `/home/openclawsvc/repos/aventor`: remote `https://github.com/Aventor-Apps/Aventor.git`, current checkout on unrelated `fix/ave-31-uploaded-image-edit-clean`, HEAD `292c2aa`, `origin/main` `936d119a2d4c06c1deb8f63cf960e00ab8d07bed`; untracked `.hermes/`, `docs/linear/CTC-102/qa-artifacts/`, and `graphify-out/`. Use an AVE-13 branch/worktree from `origin/main` for final docs; do not disturb the active unrelated branch.
 - Backend repo `/home/openclawsvc/repos/aventor-backend`: remote `https://github.com/Aventor-Apps/Aventor-backend.git`, current checkout on unrelated `fix/ave-32-review-agent-fallback`, HEAD `76ab02d`, `origin/main` `c66afd27dc37861dc8294bb00ce9e5157b1110fb`; worktree clean. Use an AVE-13 branch/worktree from `origin/main` for final docs.
 - Docs repo `/home/openclawsvc/repos/Aventor-Docs`: remote `https://github.com/Aventor-Apps/Aventor-Docs.git`, detached HEAD/main at `d353f10201668caff2e5011c3259769b9a2fd599`; use an AVE-13 branch from `origin/main` for final docs.
 - Package scripts:

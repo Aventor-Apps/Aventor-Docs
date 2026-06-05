@@ -4,7 +4,7 @@
 
 **Linear issue:** AVE-13 — Google and Meta integration during the launch agent and other blockers to launch agent
 **Primary repo:** `Aventor-Apps/Aventor-backend` at `/home/openclawsvc/repos/aventor-backend`
-**Secondary repos:** `Aventor-Git/Aventor` at `/home/openclawsvc/repos/aventor`; `Aventor-Apps/Aventor-Docs` at `/home/openclawsvc/repos/Aventor-Docs`
+**Secondary repos:** `Aventor-Apps/Aventor` at `/home/openclawsvc/repos/aventor`; `Aventor-Apps/Aventor-Docs` at `/home/openclawsvc/repos/Aventor-Docs`
 **Branch:** `AVE-13` in every touched repo
 **Docs root:** `docs/linear/AVE-13/`
 
@@ -61,7 +61,7 @@ As a campaign creator, when I ask Aventor to prepare a campaign for review, I wa
 
 ### Git / repo baseline
 
-- Frontend `aventor`: remote `https://github.com/Aventor-Git/Aventor.git`, `origin/main` `936d119a2d4c06c1deb8f63cf960e00ab8d07bed`; current checkout is unrelated branch with untracked graph/docs artifacts.
+- Frontend `aventor`: remote `https://github.com/Aventor-Apps/Aventor.git`, `origin/main` `936d119a2d4c06c1deb8f63cf960e00ab8d07bed`; current checkout is unrelated branch with untracked graph/docs artifacts.
 - Backend `aventor-backend`: remote `https://github.com/Aventor-Apps/Aventor-backend.git`, `origin/main` `c66afd27dc37861dc8294bb00ce9e5157b1110fb`; current checkout is unrelated AVE-32 branch.
 - Docs `Aventor-Docs`: remote `https://github.com/Aventor-Apps/Aventor-Docs.git`, `origin/main` `d353f10201668caff2e5011c3259769b9a2fd599`; current checkout detached.
 - Final branch handoff should use `AVE-13` branches from `origin/main`, not the unrelated current worktrees.
