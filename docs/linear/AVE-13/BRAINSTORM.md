@@ -42,7 +42,7 @@ Status: auditable brainstorm / grill log for the AVE-13 local-Codex handoff. Thi
 
 - Planner recommended default: if current goal depends on conversion tracking/leads and tracking is missing, the launch agent offers three choices: switch to a traffic/awareness-style goal, continue with the current goal and setup warning, or pause to set up tracking. Switching updates campaign objective in session/profile state and regenerates/replans params from that goal; continuing keeps original goal and carries warnings into review/launch guidance; pausing stops generation and keeps the session resumable.
 - TJ answer: “That’s right.”
-- Decision: AVE-13 should implement the goal-switch prompt with switch / continue-with-warning / pause-to-setup semantics. A switch mutates the active campaign goal/session state and should drive regenerated/replanned platform params from the new goal; declining preserves the original goal with visible warnings; pausing blocks generation until user returns.
+- Decision: AVE-13 should implement the goal-switch prompt with switch / continue-with-warning / pause-to-setup semantics. A switch mutates the active campaign goal/session state and should drive regenerated/replanned platform params from the new goal; declining preserves the original goal with visible warnings; pausing blocks generation until user returns. Mastra/orchestrator owns natural-language response interpretation and must emit structured decisions; deterministic code must not regex-parse user utterances for this intent.
 
 ### Q6 — Which account/readiness signals are in scope for AVE-13 v1, and how should setup/install gaps be handled?
 
@@ -129,7 +129,7 @@ Status: auditable brainstorm / grill log for the AVE-13 local-Codex handoff. Thi
 - Product/CEO review: `CLEAR_WITH_CHANGES`. Incorporated explicit product ownership for the dual-platform gate, GBP scope/non-local handling, docs-anchor contract, prompt-replacement specificity, and both-missing blocker UX.
 - Engineering review: `CLEAR_WITH_CHANGES` after Planner verified two false subagent findings against `origin/main` (Google conversion helpers and readiness tests do exist). Incorporated valid engineering risks: suppress/dedupe old broad advisories when deterministic readiness facts exist, prefer a two-turn goal-switch pattern, preserve launch-time Google conversion guard, and harden Meta token handling during service extraction.
 - DevEx review: `CLEAR_WITH_CHANGES`. Incorporated branch/AGENTS repair, re-fetch/re-verify before branching, docs validation fallback for the docs repo, backend-owned QA package, local-plugin fallback language, and no-new-page docs guidance.
-- Design review: not applicable by default because AVE-13 plans no new visible UI/design surface. If implementation expands into substantive UI, route to Claude Code with `frontend-design` and run design review.
+- Design review: not applicable by default because AVE-13 plans no new visible UI/design surface. If implementation expands into substantive UI, route through local Open Design per `linear-executor`; fetch an existing artifact or create/commission one, and block as `BLOCKED_DESIGN` if Open Design is unavailable or cannot provide the artifact.
 
 ## Unresolved / next grill queue
 

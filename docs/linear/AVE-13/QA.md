@@ -12,7 +12,7 @@ Verify that the launch-agent pre-generation flow is data-first, blocks only requ
 | 2 | Meta Pixel + Google conversion readiness fetched from account data | Service tests mocking Meta Graph + Google Ads GAQL responses | Code review showing shared services reused by route/preflight |
 | 3 | Unknown/unavailable distinct from missing | Tests for API timeout/permission/provider error | Logs show safe reason codes, no token/error body leakage |
 | 4 | Conversion gaps warn and ask switch/continue/pause | Tests for conversion-dependent goals; chat response options | Manual flow confirming options and docs links |
-| 5 | Switch/continue/pause semantics | Tests verifying goal mutation, accepted warning, pause/no-draft behavior, and the preferred two-turn goal-switch flow | QA package summary with state transition notes |
+| 5 | Structured switch/continue/pause semantics | Tests verifying structured decision payload application, goal mutation, accepted warning, pause/no-draft behavior, the preferred two-turn goal-switch flow, and no backend regex parsing of freeform user text | QA package summary with state transition notes |
 | 6 | GBP readiness fetched and non-blocking | Tests for selected/missing/unknown GBP | Manual chat copy if GBP missing |
 | 7 | Final Review unchanged / no readiness card | Frontend diff and tests if touched | Browser/manual check of review screen |
 | 8 | Docs update included | Docs diff and link validation | Backend constants/tests reference final docs paths |
@@ -53,7 +53,7 @@ npm run test:unit
 Focused checks if frontend touched:
 
 - Account connection/select blocker recovery still works.
-- Switch/continue/pause response options render and submit using existing option flow.
+- Switch/continue/pause response options render and submit structured decisions using existing option flow; no frontend/backend regex parsing of freeform text is introduced.
 - Final Review has no new conversion/GBP readiness card.
 
 ### Docs (`Aventor-Docs`)
@@ -117,7 +117,7 @@ Setup: Google + Meta accounts ready; no Meta Pixel and/or no Google conversion a
 Expected:
 
 - Launch Agent warns; does not ask a generic “do you have tracking?” if data shows missing.
-- Response options allow switch goal, continue with warning, pause for setup.
+- Response options allow switch goal, continue with warning, pause for setup, and submit stable structured decision payloads.
 - Meta warning links `/integrations/pixel-setup`.
 - Google warning links the updated Google docs target.
 
@@ -134,7 +134,7 @@ Setup: mock/provider failure for conversion readiness.
 Expected:
 
 - Copy says Aventor could not confirm readiness, not that tracking is missing.
-- User can continue if they know tracking is ready or pause for setup.
+- User can continue if they know tracking is ready or pause for setup; Mastra owns natural-language interpretation if the user types instead of clicking an option.
 - No token/provider error body shown.
 
 ### Flow 5 — GBP selected/missing
@@ -166,6 +166,12 @@ Expected:
 - Links resolve to correct docs pages/anchors.
 - Docs explain setup/readiness accurately and do not claim the future wizard is shipped.
 
+## Mastra response-interpretation QA guard
+
+- Deterministic/backend code must not regex-parse freeform user text for switch/continue/pause intent.
+- Mastra/orchestrator must own natural-language interpretation and emit structured `finalizationDecision` / `finalizationDecisions` payloads.
+- Tests/reviewer checks should inspect the diff for regex/string intent parsing and verify only structured decision IDs/actions are applied by deterministic code.
+
 ## Data/API verification
 
 - Provider calls are server-side only.
@@ -185,7 +191,7 @@ If visible UI is touched:
 - Button labels are concise and not ambiguous.
 - Warning copy is readable, not alarmist.
 - No layout regression in Final Review.
-- Substantive UI work must be routed to Claude Code with `frontend-design` by default; if unavailable, use configured Kimi/Ollama fallback or block per TJ rules.
+- Substantive UI work must be routed through local Open Design per `linear-executor`; if Open Design MCP/artifact fetch/artifact creation is unavailable, mark `BLOCKED_DESIGN` and stop.
 
 ## Regression areas
 

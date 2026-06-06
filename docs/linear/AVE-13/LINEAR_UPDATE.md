@@ -36,7 +36,7 @@ Groomed AVE-13 for local-Codex execution.
 - Google + Meta connection/ad-account readiness blocks the whole pre-generation flow if missing, even for an apparent single-platform subset; single-platform-only generation is separate product scope.
 - Conversion tracking readiness is fetched from connected account data first.
 - Missing conversion tracking after required accounts exist is a warning/decision, not a hard blocker.
-- Launch Agent asks switch goal / continue with warning / pause for setup.
+- Launch Agent asks switch goal / continue with warning / pause for setup; Mastra/orchestrator owns natural-language interpretation and emits structured decisions, while deterministic code must not regex-parse user responses.
 - GBP readiness is fetched and handled conversationally when local-relevant; missing scope/unknown GBP is not a blocker, and non-local campaigns can treat GBP as not applicable.
 - No new conversion/GBP readiness card or Final Review redesign.
 - Meta docs target: `/integrations/pixel-setup`.

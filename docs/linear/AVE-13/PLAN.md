@@ -30,7 +30,7 @@ As a campaign creator, when I ask Aventor to prepare a campaign for review, I wa
 2. **Data-first conversion checks:** after required accounts exist, backend fetches Meta Pixel and Google conversion action/goal readiness. Do not ask “do you already have tracking?” when data answers it.
 3. **Unknown is not missing:** provider/API/permission errors produce `unknown`/`unavailable` readiness and targeted fallback questions, not false “missing” facts.
 4. **Conversion gaps warn, not block:** after required accounts exist, missing/unknown tracking does not hard-block generation. For conversion-dependent goals (`conversions`, `leads`, `sales`, or the repo's normalized campaign-goal/objective equivalents), launch agent warns and asks whether to switch goal, continue with warning, or pause for setup.
-5. **Goal-switch semantics:** switch mutates active campaign goal/session state and regenerates/replans from the new goal; continue preserves original goal and accepted warning; pause keeps generation resumable and prevents draft persistence.
+5. **Goal-switch semantics:** structured switch/continue/pause decisions mutate or preserve state idempotently. Mastra owns natural-language interpretation and emits structured decisions; deterministic/backend code must not regex-parse freeform user responses to decide intent.
 6. **GBP is optional enrichment:** fetch saved GBP readiness/selection when the campaign/business context is local-relevant or an existing GBP selection exists; selected GBP becomes a positive fact. Missing/unknown/missing-scope GBP is conversational optional guidance, not a blocker. For clearly non-local campaigns with no GBP signal, mark GBP `not_applicable` and avoid irrelevant chatter.
 7. **No new deterministic conversion/GBP UI:** use existing chat/finalization response options and existing account connect/select UI. Final Review remains unchanged.
 8. **Docs update:** Aventor-Docs gets narrow Google conversion tracking + GBP readiness guidance. Meta warnings link to `/integrations/pixel-setup`. Do not implement the AVE-40 setup wizard.
@@ -91,6 +91,10 @@ As a campaign creator, when I ask Aventor to prepare a campaign for review, I wa
 
 ## Recommended approach
 
+### Mastra-owned response interpretation
+
+Natural-language user response interpretation must stay Mastra-owned. Deterministic/backend code must not parse freeform user text with regex/string matching to decide `switch`, `continue`, `pause`, or similar intent. The orchestrator/Launch Agent should convert user language or button selections into structured `finalizationDecision` / `finalizationDecisions` payloads; deterministic code may validate, persist, and apply only those structured decisions by stable IDs/actions.
+
 Build a deterministic backend launch-readiness domain and integrate it into `param_generate` before platform draft generation. Keep provider facts server-side; store only safe readiness statuses/docs URLs in campaign/session state. Use launch-agent copy for the user-facing conversation.
 
 Recommended new/refactored pieces:
@@ -130,7 +134,7 @@ Add tests before implementation, e.g. `test/mastra/launch-readiness-preflight.te
 - Meta Pixel + Google conversion ready yields no conversion warning;
 - API unavailable/permission-limited results are `unknown`/`unavailable`;
 - GBP selected vs missing/unknown behavior;
-- switch goal / continue / pause semantics;
+- structured switch goal / continue / pause decision semantics, with Mastra owning natural-language response interpretation;
 - existing launch-time Google conversion readiness still passes;
 - both Google + Meta missing are surfaced together, not sequentially;
 - single-platform-selected state still follows TJ's dual-platform readiness decision.
@@ -160,7 +164,8 @@ Add tests before implementation, e.g. `test/mastra/launch-readiness-preflight.te
 - Run launch-readiness preflight in `runDeterministicParamGeneration()` before parameter draft generation/persistence.
 - If required Google/Meta account readiness fails, return blocking finalization state.
 - If conversion readiness is missing/unknown for conversion-dependent goals, return a warning decision group with switch / continue / pause options.
-- Apply decisions idempotently:
+- Do not add deterministic regex/string parsing of user utterances for those options. Mastra/orchestrator must interpret natural language or button selections into structured `finalizationDecision` / `finalizationDecisions` payloads; deterministic code only validates and applies those stable decision IDs/actions.
+- Apply structured decisions idempotently:
   - switch: mutate campaign goal, clear/supersede the conversion warning, and let the next deterministic turn generate from the updated goal rather than building a fragile in-turn recursive rerun;
   - continue: mark warning accepted and proceed;
   - pause: stay waiting and persist no drafts.
@@ -169,9 +174,9 @@ Add tests before implementation, e.g. `test/mastra/launch-readiness-preflight.te
 
 ### Phase 5 — Frontend contract plumbing only if needed
 
-**Owner:** Codex for non-visual plumbing; Claude Code for substantive UI if unexpectedly required.
+**Owner:** Codex for non-visual plumbing. Open Design is required for substantive UI if unexpectedly needed.
 
-- Verify existing chat response option and account connection modal can handle new blocker/warning flows.
+- Verify existing chat response options submit structured decisions into Mastra/orchestrator; do not implement frontend/backend regex parsing of freeform user text.
 - Update `src/utils/api.ts` types only if a frontend-visible route/response is introduced.
 - Do not add conversion/GBP readiness cards or Final Review layout changes.
 
@@ -241,7 +246,7 @@ Run independent reviewers (see `REVIEWERS.md`), repair blocking findings, then c
 - `AGENTS.md`
 - `docs/linear/AVE-13/*`
 - `src/utils/api.ts` only if contract exposed.
-- `src/components/dashboard/CampaignReview.tsx` only if existing response option flow needs alignment.
+- `src/components/dashboard/CampaignReview.tsx` only if existing response option flow needs non-visual structured-decision alignment.
 - `src/components/modals/LaunchConnectionConfirmationModal.tsx` only if existing blocker recovery needs non-visual plumbing.
 - Focused `test/*` updates if frontend touched.
 

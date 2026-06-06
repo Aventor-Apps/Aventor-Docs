@@ -41,7 +41,19 @@ No live Supabase data/schema mutation is allowed without explicit TJ approval un
 
 ## UI routing
 
-Substantive visible UI/design/styling/layout/component work should be handled by Claude Code with `frontend-design` guidance by default. Codex may handle backend contracts, tests, validation, docs, and non-visual plumbing. If Claude UI execution is unavailable, local Codex may be used only with TJ's required `linear-executor`, `frontend-design`, and `frontend quality` / `frontend-quality` skill path. Do not silently route unskilled UI work to Codex.
+Substantive visible UI/design/styling/layout/component work is not expected for AVE-13. If it becomes necessary, follow the local `linear-executor` Open Design route instead of direct Claude/Kimi/plain-Codex UI work:
+
+1. Inspect the repo design system first.
+2. Fetch an existing Open Design artifact/design bundle with `get_artifact()` when available.
+3. If no artifact exists, create/commission a new Open Design artifact with `create_project` if needed, `start_run`, `get_run`, then `get_artifact`, requiring reuse of repo primitives/tokens.
+4. Record the Open Design source/run and integration scope in the workpad.
+5. If Open Design MCP/artifact fetch/artifact creation is unavailable or blocked, mark the UI phase `blocked`/`BLOCKED_DESIGN` and stop. Do not fall back to plain Codex, Claude Code, Kimi, or raw Ollama for substantive UI/design work.
+
+Codex may still own backend contracts, tests, validation, docs, and non-visual frontend API/type plumbing.
+
+## Mastra-owned user response interpretation
+
+Natural-language user response interpretation must stay Mastra-owned. Deterministic/backend code must not parse freeform user text with regex/string matching to decide `switch`, `continue`, `pause`, or similar intent. The orchestrator/Launch Agent should convert user language or button selections into structured `finalizationDecision` / `finalizationDecisions` payloads; deterministic code may validate, persist, and apply only those structured decisions by stable IDs/actions.
 
 ## QA package and reviewer artifacts
 

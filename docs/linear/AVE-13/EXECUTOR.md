@@ -63,6 +63,20 @@ Current inspected backend/frontend baselines had stale root `AGENTS.md` content 
 
 Do not open a planning-docs-only PR. Implementation PR(s) should include code/docs changes and QA package.
 
+
+## Planned local skills / plugins
+
+Use these in addition to the source docs and repo tooling:
+
+- `linear-executor` for implementation orchestration and workpad/QA-package discipline.
+- `linear-reviewer` for report-only QA/review closeout.
+- `agent-orchestration-skill` in the root session only when bounded worker/reviewer dispatch is useful; never ask workers to invoke it.
+- `ce:work` for execution discipline and `ce:review` for review orchestration with ECC prompt-backed reviewers.
+- Superpowers process skills: `using-git-worktrees`, `writing-plans`, `test-driven-development`, `verification-before-completion`, and `requesting-code-review` as applicable.
+- Backend/API/security/data skills: `ecc:backend-patterns`, `ecc:api-design`, `ecc:error-handling`, `ecc:security-review`, `api-contract-reviewer`, and `supabase-postgres-best-practices` when schema/data persistence is touched.
+- Supabase plugin in read-only mode for project/schema context unless TJ explicitly approves a write/migration action.
+- Open Design MCP workflow only if substantive UI unexpectedly appears: `get_artifact()` for existing artifacts, or `create_project` / `start_run` / `get_run` / `get_artifact` for a new artifact when none exists; block as `BLOCKED_DESIGN` if unavailable.
+
 ## Implementation routing
 
 Codex may own:
@@ -72,12 +86,13 @@ Codex may own:
 - Aventor-Docs markdown/docs updates;
 - validation, reviewer coordination, QA package, PR/Linear updates.
 
-Substantive visible UI/design/styling/layout/component work is not expected. If it becomes necessary:
+Substantive visible UI/design/styling/layout/component work is not expected. If it becomes necessary, follow the `linear-executor` Open Design route:
 
-1. Route to Claude Code with `frontend-design` by default.
-2. If Claude Code is unavailable/usage-limited, use the configured Kimi/Ollama fallback per TJ Planner routing.
-3. If neither is available, mark the UI phase blocked.
-4. Do not route substantive UI implementation to plain Codex.
+1. Inspect the repo design system first.
+2. Fetch an existing Open Design artifact/design bundle with `get_artifact()` when available.
+3. If no suitable artifact exists, create/commission a new Open Design artifact/run (`create_project` if needed, `start_run`, poll `get_run`, then `get_artifact`) and require reuse of repo primitives/tokens.
+4. Record the Open Design project/artifact/run, design-system files inspected, integration scope, and blocker status in the workpad.
+5. If Open Design MCP, artifact fetch, or artifact creation is unavailable/blocked, mark UI work `BLOCKED_DESIGN` and stop. Do not fall back to plain Codex, Claude Code, Kimi, or raw Ollama for substantive UI work.
 
 ## Phase checklist
 
@@ -92,7 +107,7 @@ Substantive visible UI/design/styling/layout/component work is not expected. If 
 ### Phase 1 — Tests first
 
 - [ ] Add failing backend tests for launch readiness preflight.
-- [ ] Cover missing Google, missing Meta, tracking missing, tracking unknown, GBP states, switch/continue/pause, and no-draft persistence on blockers.
+- [ ] Cover missing Google, missing Meta, tracking missing, tracking unknown, GBP states, structured switch/continue/pause decisions, and no-draft persistence on blockers.
 - [ ] Run focused tests to confirm expected failures before implementation.
 
 ### Phase 2 — Provider readiness services
@@ -114,13 +129,13 @@ Substantive visible UI/design/styling/layout/component work is not expected. If 
 - [ ] Integrate preflight before parameter drafts persist.
 - [ ] Block whole generation for missing required Google/Meta setup.
 - [ ] Add conversion warning decision group for conversion-dependent goals.
-- [ ] Implement switch/continue/pause idempotently. Prefer the two-turn goal-switch pattern documented in `ARCHITECTURE.md`; do not add recursive in-turn generation unless existing code already supports it safely.
+- [ ] Implement structured switch/continue/pause decision application idempotently. Prefer the two-turn goal-switch pattern documented in `ARCHITECTURE.md`; do not add recursive in-turn generation unless existing code already supports it safely. Do not add deterministic regex/string parsing of freeform user responses; Mastra/orchestrator owns natural-language interpretation and must emit structured `finalizationDecision` / `finalizationDecisions` payloads.
 - [ ] Update launch prompt to remove conflict with required account blockers using the exact replacement direction in `PLAN.md`.
 - [ ] Suppress/replace broad pixel/GBP advisory questions when readiness facts exist.
 
 ### Phase 5 — Frontend if needed
 
-- [ ] Verify existing chat response options and connection modal recover the blocker/warning flows.
+- [ ] Verify existing chat response options and connection modal recover the blocker/warning flows through structured decision payloads, without adding regex parsing of raw user text.
 - [ ] Update `src/utils/api.ts` only if a frontend-visible contract is introduced.
 - [ ] No Final Review readiness cards.
 

@@ -78,11 +78,12 @@ AVE-13 should add a **server-side launch readiness preflight** before parameter 
 1. **Facts are deterministic.** Provider account/pixel/conversion/GBP facts come from backend services, not LLM guesses.
 2. **Conversation is agent-owned.** The Launch Agent explains facts and asks targeted decisions, but blocker truth comes from deterministic state.
 3. **Required setup blocks; optimization setup warns.** Missing Google/Meta connection/selection blocks. Missing conversion tracking warns/asks after required accounts exist; GBP is optional and can be `not_applicable` for non-local contexts.
-4. **Goal decisions are idempotent.** Switch/continue/pause decisions must survive retries and not duplicate prompts.
+4. **Goal decisions are idempotent and structured.** Switch/continue/pause decisions must survive retries, not duplicate prompts, and arrive as structured Mastra/orchestrator decisions rather than backend regex parsing of freeform text.
 5. **No token leakage.** Tokens remain server-side. State, logs, docs, QA artifacts, and Linear comments only contain safe status/identifier data.
 6. **No default DB migration.** Store readiness in campaign/session state if needed; avoid new tables unless implementation proves a strong need.
 7. **Final Review is stable.** Do not create new conversion/GBP UI cards or redesign review screens.
 8. **Show all required blockers together.** If both Google and Meta required setup are missing, return both blockers in one response instead of making the user fix them sequentially.
+9. **Mastra owns user-response interpretation.** Deterministic code validates and applies structured decision payloads; it must not infer user intent from raw text with regex/string matching.
 
 ## Target component map
 
@@ -100,7 +101,7 @@ Backend repo (aventor-backend)
   src/mastra/lib/launch-readiness.ts (new)
     -> combines required account, conversion, and GBP facts
     -> emits readiness snapshot + finalization blockers/warnings
-    -> applies switch/continue/pause decisions or delegates to existing finalization decision handling
+    -> applies structured switch/continue/pause decisions emitted by Mastra/orchestrator, or delegates to existing finalization decision handling
 
   src/lib/facebook|meta/pixels.ts (new extraction)
     -> shared Meta Pixel readiness service
@@ -144,6 +145,8 @@ Expected deterministic outputs:
 
 ### Agent conversation boundary
 
+Natural-language user response interpretation must stay Mastra-owned. Deterministic/backend code must not parse freeform user text with regex/string matching to decide `switch`, `continue`, `pause`, or similar intent. The orchestrator/Launch Agent should convert user language or button selections into structured `finalizationDecision` / `finalizationDecisions` payloads; deterministic code may validate, persist, and apply only those structured decisions by stable IDs/actions.
+
 The Launch Agent should:
 
 - explain blocker/warning facts in short copy;
@@ -159,7 +162,8 @@ Frontend should:
 - render existing chat and response options;
 - reuse existing connection/select modal flows for account blockers;
 - not inspect tokens or provider APIs directly;
-- avoid new conversion/GBP readiness UI surfaces.
+- avoid new conversion/GBP readiness UI surfaces;
+- submit structured response-option payloads through existing Mastra/orchestrator decision handling rather than adding client/server regex parsing of freeform text.
 
 ## Suggested readiness status model
 
@@ -371,7 +375,7 @@ The evaluator should derive identity/session/user context from existing `Campaig
 }
 ```
 
-Exact option labels should match existing frontend response option conventions.
+Exact option labels should match existing frontend response option conventions. These examples are conversational; actual state changes must be driven by structured `finalizationDecision` / `finalizationDecisions` payloads emitted by Mastra/orchestrator, not deterministic regex parsing of raw user text.
 
 ### Conversion warning example
 
@@ -483,7 +487,8 @@ The docs update should create those exact anchors in `integrations/google-ads.md
 11. **GBP OAuth scope not granted.** Treat as `unknown`/`unavailable` for local-relevant campaigns, not as a hard missing setup fact. Do not implement a GBP scope wizard/prompt in AVE-13.
 12. **Non-local campaign with no GBP signal.** Skip GBP readiness chatter and set status to `not_applicable` if that status is added internally.
 13. **Both required platforms missing.** Return both required blockers in one response.
-14. **New `not_applicable` status.** If persisted or exposed to frontend, update Zod/API tests and include API-contract/schema reviewer attention.
+14. **No deterministic freeform parsing.** Tests/review must prove backend code applies structured decisions and does not regex-parse user utterances for switch/continue/pause intent.
+15. **New `not_applicable` status.** If persisted or exposed to frontend, update Zod/API tests and include API-contract/schema reviewer attention.
 
 ## Security and privacy implications
 
@@ -502,7 +507,7 @@ Most work belongs here. Codex can implement backend services, tests, state machi
 
 ### Frontend
 
-Expected work is small. Codex may handle non-visual API/type plumbing. If a real visible component/interaction change emerges, route it to Claude Code with `frontend-design`; if Claude unavailable, use the configured Kimi/Ollama fallback or block per TJ rules.
+Expected work is small. Codex may handle non-visual API/type plumbing. If a real visible component/interaction change emerges, route it through local Open Design per `linear-executor`: fetch an existing artifact/design bundle with `get_artifact()` or create/commission a new artifact and pull it with `get_artifact()`. If Open Design is unavailable or cannot create/fetch the artifact, mark `BLOCKED_DESIGN` and stop.
 
 ### Aventor-Docs
 

@@ -21,7 +21,7 @@ Because AVE-13 touches OAuth-backed external integrations, campaign generation s
 
 - Does missing Google or Meta required account setup block the whole generation flow before drafts persist?
 - Are conversion-tracking gaps warnings/decisions, not hard blockers, after required accounts exist?
-- Are switch/continue/pause semantics implemented exactly?
+- Are switch/continue/pause semantics implemented exactly through structured Mastra/orchestrator decisions, without deterministic regex parsing of freeform user responses?
 - Is GBP optional/non-blocking?
 - Is Final Review unchanged except existing supported warnings?
 - Is AVE-40 setup wizard still out of scope?
@@ -37,6 +37,8 @@ Because AVE-13 touches OAuth-backed external integrations, campaign generation s
 - Are docs-link constants centralized/testable enough?
 
 ### API-contract / external integration
+
+- Does the diff avoid deterministic regex/string intent parsing of user responses for switch/continue/pause, leaving natural-language interpretation to Mastra/orchestrator and applying only structured decision payloads?
 
 - Do service inputs/outputs distinguish ready/missing/unknown/unavailable/not-applicable?
 - Are provider API errors normalized and redacted?
@@ -73,9 +75,9 @@ Because AVE-13 touches OAuth-backed external integrations, campaign generation s
 Only run if visible frontend UI changes are made.
 
 - Does UI follow Aventor patterns?
-- Are response options clear and accessible?
+- Are response options clear, accessible, and wired to structured decision payloads rather than raw-text regex parsing?
 - Did Final Review avoid new readiness card/panel scope?
-- Was substantive UI work routed to Claude Code with `frontend-design` (or configured Kimi/Ollama fallback if Claude unavailable)?
+- Was substantive UI work routed through local Open Design per `linear-executor`, with artifact/run provenance recorded, or blocked as `BLOCKED_DESIGN` if Open Design was unavailable?
 
 ### Conditional schema/data
 
@@ -102,7 +104,7 @@ docs/linear/AVE-13/qa-artifacts/docs-review.md
 Add conditional artifacts only when applicable:
 
 ```text
-docs/linear/AVE-13/qa-artifacts/frontend-design-review.md
+docs/linear/AVE-13/qa-artifacts/frontend-open-design-review.md
 docs/linear/AVE-13/qa-artifacts/schema-data-review.md
 ```
 
