@@ -41,13 +41,14 @@ No live Supabase data/schema mutation is allowed without explicit TJ approval un
 
 ## UI routing
 
-Substantive visible UI/design/styling/layout/component work is not expected for AVE-13. If it becomes necessary, follow the local `linear-executor` Open Design route instead of direct Claude/Kimi/plain-Codex UI work:
+AVE-13 includes substantive UI design for the launch-readiness user interaction. Follow the local `linear-executor` Open Design route instead of direct Claude/Kimi/plain-Codex UI work:
 
-1. Inspect the repo design system first.
-2. Fetch an existing Open Design artifact/design bundle with `get_artifact()` when available.
-3. If no artifact exists, create/commission a new Open Design artifact with `create_project` if needed, `start_run`, `get_run`, then `get_artifact`, requiring reuse of repo primitives/tokens.
-4. Record the Open Design source/run and integration scope in the workpad.
+1. Inspect repo design-system files and adjacent chat/connect/select patterns first.
+2. Fetch the relevant existing Open Design artifact/design bundle with `get_artifact()` when available.
+3. If no suitable artifact exists, create/commission a new Open Design artifact with `create_project` if needed, `start_run`, `get_run`, then `get_artifact`, requiring reuse of repo primitives/tokens and the existing chat/response-option/connect patterns.
+4. Record the Open Design source/run and integration scope in the workpad before editing UI code.
 5. If Open Design MCP/artifact fetch/artifact creation is unavailable or blocked, mark the UI phase `blocked`/`BLOCKED_DESIGN` and stop. Do not fall back to plain Codex, Claude Code, Kimi, or raw Ollama for substantive UI/design work.
+6. Codex may own backend/API/state/tests and deterministic integration of the Open Design output, but Open Design is the UI design source of truth.
 
 Codex may still own backend contracts, tests, validation, docs, and non-visual frontend API/type plumbing.
 

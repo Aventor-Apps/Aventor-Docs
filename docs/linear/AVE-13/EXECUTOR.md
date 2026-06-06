@@ -75,7 +75,7 @@ Use these in addition to the source docs and repo tooling:
 - Superpowers process skills: `using-git-worktrees`, `writing-plans`, `test-driven-development`, `verification-before-completion`, and `requesting-code-review` as applicable.
 - Backend/API/security/data skills: `ecc:backend-patterns`, `ecc:api-design`, `ecc:error-handling`, `ecc:security-review`, `api-contract-reviewer`, and `supabase-postgres-best-practices` when schema/data persistence is touched.
 - Supabase plugin in read-only mode for project/schema context unless TJ explicitly approves a write/migration action.
-- Open Design MCP workflow only if substantive UI unexpectedly appears: `get_artifact()` for existing artifacts, or `create_project` / `start_run` / `get_run` / `get_artifact` for a new artifact when none exists; block as `BLOCKED_DESIGN` if unavailable.
+- Open Design MCP workflow for required AVE-13 UI design: `get_artifact()` for existing artifacts, or `create_project` / `start_run` / `get_run` / `get_artifact` for a new artifact when none exists; block as `BLOCKED_DESIGN` if unavailable.
 
 ## Implementation routing
 
@@ -86,13 +86,14 @@ Codex may own:
 - Aventor-Docs markdown/docs updates;
 - validation, reviewer coordination, QA package, PR/Linear updates.
 
-Substantive visible UI/design/styling/layout/component work is not expected. If it becomes necessary, follow the `linear-executor` Open Design route:
+Substantive visible UI/design/styling/layout/component work is required for AVE-13's launch-readiness interaction. Follow the `linear-executor` Open Design route:
 
-1. Inspect the repo design system first.
-2. Fetch an existing Open Design artifact/design bundle with `get_artifact()` when available.
-3. If no suitable artifact exists, create/commission a new Open Design artifact/run (`create_project` if needed, `start_run`, poll `get_run`, then `get_artifact`) and require reuse of repo primitives/tokens.
-4. Record the Open Design project/artifact/run, design-system files inspected, integration scope, and blocker status in the workpad.
+1. Inspect the repo design system, shared primitives, and adjacent chat/connect/select examples first.
+2. Fetch the relevant existing Open Design artifact/design bundle with `get_artifact()` when available.
+3. If no suitable artifact exists, create/commission a new Open Design artifact/run (`create_project` if needed, `start_run`, poll `get_run`, then `get_artifact`) and require reuse of repo primitives/tokens plus existing chat/response-option/connect patterns.
+4. Record the Open Design project/artifact/run, design-system files inspected, integration scope, and blocker status in the workpad before editing UI code.
 5. If Open Design MCP, artifact fetch, or artifact creation is unavailable/blocked, mark UI work `BLOCKED_DESIGN` and stop. Do not fall back to plain Codex, Claude Code, Kimi, or raw Ollama for substantive UI work.
+6. Codex may implement backend/API/state/tests and deterministic integration of the Open Design output only.
 
 ## Phase checklist
 
@@ -133,11 +134,12 @@ Substantive visible UI/design/styling/layout/component work is not expected. If 
 - [ ] Update launch prompt to remove conflict with required account blockers using the exact replacement direction in `PLAN.md`.
 - [ ] Suppress/replace broad pixel/GBP advisory questions when readiness facts exist.
 
-### Phase 5 — Frontend if needed
+### Phase 5 — Open Design UI and frontend integration
 
-- [ ] Verify existing chat response options and connection modal recover the blocker/warning flows through structured decision payloads, without adding regex parsing of raw user text.
+- [ ] Route the launch-readiness UI through Open Design, recording artifact/run provenance before editing UI code.
+- [ ] Verify chat response options and connection modal recover the blocker/warning flows through structured decision payloads, without adding regex parsing of raw user text.
 - [ ] Update `src/utils/api.ts` only if a frontend-visible contract is introduced.
-- [ ] No Final Review readiness cards.
+- [ ] No unapproved Final Review readiness cards or redesign beyond the approved Open Design scope.
 
 ### Phase 6 — Docs
 

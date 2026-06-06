@@ -32,7 +32,7 @@ As a campaign creator, when I ask Aventor to prepare a campaign for review, I wa
 4. **Conversion gaps warn, not block:** after required accounts exist, missing/unknown tracking does not hard-block generation. For conversion-dependent goals (`conversions`, `leads`, `sales`, or the repo's normalized campaign-goal/objective equivalents), launch agent warns and asks whether to switch goal, continue with warning, or pause for setup.
 5. **Goal-switch semantics:** structured switch/continue/pause decisions mutate or preserve state idempotently. Mastra owns natural-language interpretation and emits structured decisions; deterministic/backend code must not regex-parse freeform user responses to decide intent.
 6. **GBP is optional enrichment:** fetch saved GBP readiness/selection when the campaign/business context is local-relevant or an existing GBP selection exists; selected GBP becomes a positive fact. Missing/unknown/missing-scope GBP is conversational optional guidance, not a blocker. For clearly non-local campaigns with no GBP signal, mark GBP `not_applicable` and avoid irrelevant chatter.
-7. **No new deterministic conversion/GBP UI:** use existing chat/finalization response options and existing account connect/select UI. Final Review remains unchanged.
+7. **Open Design-owned UI design:** AVE-13 includes launch-readiness UI design for chat/response-option/connect/select interactions. Use Open Design as the UI source of truth, reuse existing account connect/select patterns, and avoid unapproved conversion/GBP cards or Final Review redesign.
 8. **Docs update:** Aventor-Docs gets narrow Google conversion tracking + GBP readiness guidance. Meta warnings link to `/integrations/pixel-setup`. Do not implement the AVE-40 setup wizard.
 9. **Safety:** no live Supabase mutation by Planner. Prefer no schema migration. If implementation requires schema/RPC/policy changes, run schema/security review and do not apply live migration without approval.
 10. **QA package:** executor must create `docs/linear/AVE-13/qa-package/{checkpoint_manifest.md,browser_qa_prompt.md,validation_results.md,qa_readiness_result.json}` before final PR/Linear closeout.
@@ -172,13 +172,17 @@ Add tests before implementation, e.g. `test/mastra/launch-readiness-preflight.te
 - Update launch prompt to align with new backend truth. Replace the current "do not ask the user to connect Meta or Google during Finalize Campaign" instruction with: "Required Google Ads and Meta account connection/selection is enforced by backend preflight before parameter generation. If a required account blocker is active, explain which account setup is needed and direct the user to the existing connect/select UI. Do not proceed with generation until required account blockers are resolved."
 - Replace/bypass broad advisory questions when readiness facts already answer them. If required account blockers are active, suppress marketing-advisory pixel/GBP questions for that turn so the user sees one coherent setup blocker set.
 
-### Phase 5 — Frontend contract plumbing only if needed
+### Phase 5 — Open Design UI and frontend contract plumbing
 
-**Owner:** Codex for non-visual plumbing. Open Design is required for substantive UI if unexpectedly needed.
+**Owner:** Open Design for UI design source of truth; Codex for backend/API/state/tests and deterministic integration of Open Design output.
 
+- Inspect adjacent chat, response-option, account connect/select, modal, token, and shared component patterns before UI work.
+- Fetch the relevant existing Open Design artifact/design bundle with `get_artifact()` when available; if none exists, create/commission a new artifact/run (`create_project` if needed, `start_run`, poll `get_run`, then `get_artifact`) that reuses repo primitives/tokens and existing chat/connect/select patterns.
+- Record Open Design artifact/run provenance, inspected design-system files, integration scope, and blocker status in the workpad before editing UI code.
+- Integrate the Open Design-sourced launch-readiness interaction for required account setup and switch/continue/pause decisions, while preserving structured `finalizationDecision` / `finalizationDecisions` payloads.
 - Verify existing chat response options submit structured decisions into Mastra/orchestrator; do not implement frontend/backend regex parsing of freeform user text.
 - Update `src/utils/api.ts` types only if a frontend-visible route/response is introduced.
-- Do not add conversion/GBP readiness cards or Final Review layout changes.
+- Avoid unapproved conversion/GBP readiness cards or Final Review layout changes; if Open Design MCP/artifact fetch/artifact creation is unavailable, mark `BLOCKED_DESIGN` and stop.
 
 ### Phase 6 — Aventor-Docs update
 
@@ -273,7 +277,7 @@ Run independent reviewers (see `REVIEWERS.md`), repair blocking findings, then c
 - Account setup blockers: clear, short Launch Agent copy plus existing connection/select UI.
 - Conversion warning options should be short: switch goal, continue with warning, pause for setup.
 - Missing GBP copy should explain optional benefit for local campaigns without blocking.
-- Final Review remains unchanged unless it already displays backend-provided warnings.
+- Launch-readiness UI follows Open Design output; Final Review remains unchanged unless explicitly approved by the Open Design artifact and TJ scope.
 - Browser screenshots/video are optional by default.
 
 ## Risks / unknowns
@@ -307,4 +311,4 @@ Do not create Linear subtasks unless TJ explicitly says `create the subtasks`.
 
 ## Planner review notes
 
-Planner review gates were run in CEO/product, engineering, and DevEx modes. Verdict: `CLEAR_WITH_CHANGES`; required doc clarifications were incorporated before branch handoff. Design review is not required because AVE-13 has no planned new visible UI/design surface; run it only if implementation expands into substantive UI work. The plan remains high enough risk to warrant implementation-time engineering/security/API-contract/testing/docs reviewers because it touches OAuth-backed external integrations and campaign generation state. It should avoid DB schema changes and avoid broad UI scope.
+Planner review gates were run in CEO/product, engineering, and DevEx modes. Verdict: `CLEAR_WITH_CHANGES`; required doc clarifications were incorporated before branch handoff. Design review/Open Design is required for AVE-13 because launch-readiness UI design is in scope. The plan remains high enough risk to warrant implementation-time engineering/security/API-contract/testing/docs reviewers because it touches OAuth-backed external integrations and campaign generation state. It should avoid DB schema changes and avoid unapproved Final Review/card redesign scope.

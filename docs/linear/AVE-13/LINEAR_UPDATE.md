@@ -38,7 +38,7 @@ Groomed AVE-13 for local-Codex execution.
 - Missing conversion tracking after required accounts exist is a warning/decision, not a hard blocker.
 - Launch Agent asks switch goal / continue with warning / pause for setup; Mastra/orchestrator owns natural-language interpretation and emits structured decisions, while deterministic code must not regex-parse user responses.
 - GBP readiness is fetched and handled conversationally when local-relevant; missing scope/unknown GBP is not a blocker, and non-local campaigns can treat GBP as not applicable.
-- No new conversion/GBP readiness card or Final Review redesign.
+- Launch-readiness UI design is in scope and must use Open Design; avoid unapproved conversion/GBP readiness cards or Final Review redesign.
 - Meta docs target: `/integrations/pixel-setup`.
 - Google conversion/GBP docs update is included in AVE-13 with expected anchors `#conversion-tracking-readiness` and `#google-business-profile-readiness`.
 - Setup wizard remains out of scope in AVE-13; follow-up is AVE-40.

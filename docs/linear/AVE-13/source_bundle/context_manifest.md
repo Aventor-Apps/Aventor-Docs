@@ -86,4 +86,4 @@ Security advisors returned existing project-wide warnings. AVE-13 should avoid n
 ## Additional TJ constraints added after handoff
 
 - Natural-language user response interpretation is Mastra-owned. Deterministic/backend code must not regex-parse freeform user text for switch/continue/pause intent; it may only validate and apply structured `finalizationDecision` / `finalizationDecisions` payloads emitted by Mastra/orchestrator.
-- Substantive UI work remains unexpected. If it becomes necessary, use local Open Design per `linear-executor`: fetch an existing artifact with `get_artifact()` or create/commission one and pull it with `get_artifact()`. If Open Design is unavailable or cannot provide the artifact, block as `BLOCKED_DESIGN`.
+- Substantive UI design is required for AVE-13's launch-readiness interaction. Use local Open Design per `linear-executor`: fetch an existing artifact with `get_artifact()` or create/commission one and pull it with `get_artifact()`. If Open Design is unavailable or cannot provide the artifact, block as `BLOCKED_DESIGN`.

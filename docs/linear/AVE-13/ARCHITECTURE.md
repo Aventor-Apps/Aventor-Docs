@@ -81,7 +81,7 @@ AVE-13 should add a **server-side launch readiness preflight** before parameter 
 4. **Goal decisions are idempotent and structured.** Switch/continue/pause decisions must survive retries, not duplicate prompts, and arrive as structured Mastra/orchestrator decisions rather than backend regex parsing of freeform text.
 5. **No token leakage.** Tokens remain server-side. State, logs, docs, QA artifacts, and Linear comments only contain safe status/identifier data.
 6. **No default DB migration.** Store readiness in campaign/session state if needed; avoid new tables unless implementation proves a strong need.
-7. **Final Review is stable.** Do not create new conversion/GBP UI cards or redesign review screens.
+7. **UI design is Open Design-owned.** AVE-13 includes launch-readiness UI design for chat/response-option/connect/select interactions; route it through Open Design and avoid unapproved conversion/GBP readiness cards or Final Review redesign.
 8. **Show all required blockers together.** If both Google and Meta required setup are missing, return both blockers in one response instead of making the user fix them sequentially.
 9. **Mastra owns user-response interpretation.** Deterministic code validates and applies structured decision payloads; it must not infer user intent from raw text with regex/string matching.
 
@@ -322,7 +322,7 @@ No saved GBP selection / missing scope / fetch unknown
   -> if clearly non-local and no GBP signal: gbp.status = not_applicable
   -> no generation blocker
   -> Launch Agent may explain optional local campaign benefit and link docs only when relevant
-  -> Final Review layout unchanged
+  -> Open Design-sourced launch-readiness UI, with Final Review layout unchanged unless explicitly approved
 ```
 
 ### Sequence F — Both Google and Meta required setup missing
@@ -507,7 +507,7 @@ Most work belongs here. Codex can implement backend services, tests, state machi
 
 ### Frontend
 
-Expected work is small. Codex may handle non-visual API/type plumbing. If a real visible component/interaction change emerges, route it through local Open Design per `linear-executor`: fetch an existing artifact/design bundle with `get_artifact()` or create/commission a new artifact and pull it with `get_artifact()`. If Open Design is unavailable or cannot create/fetch the artifact, mark `BLOCKED_DESIGN` and stop.
+AVE-13 has visible launch-readiness UI design in scope. Route that work through local Open Design per `linear-executor`: fetch the relevant existing artifact/design bundle with `get_artifact()` or create/commission a new artifact and pull it with `get_artifact()`. Codex may handle backend/API/type plumbing and deterministic integration of the Open Design output. If Open Design is unavailable or cannot create/fetch the artifact, mark `BLOCKED_DESIGN` and stop.
 
 ### Aventor-Docs
 

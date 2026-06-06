@@ -60,7 +60,7 @@ Status: auditable brainstorm / grill log for the AVE-13 local-Codex handoff. Thi
 
 - Planner recommended default: Google Ads + Meta required connection/account-selection block can use existing connection/select UI affordances plus agent messaging; conversion tracking and GBP could optionally appear in a lightweight readiness card if existing surfaces support it, but not as a large new settings/onboarding page.
 - TJ answer: “So you are correct with the connection of google ads and meta, for the conversion and gbp, this should happen conversationally, so not through the UI for those warnings because the launch agent will fetch that information after the connections to be able to match those decisions. And then the final review will still remain the same.”
-- Decision: Required Google Ads + Meta connection/ad-account selection can use deterministic UI/connect/select affordances before generation. Conversion-tracking and GBP readiness warnings/questions should be owned by the launch agent conversationally after required platform connections exist; do not add deterministic UI warning cards/panels for those in AVE-13. Final Review remains unchanged.
+- Decision: Required Google Ads + Meta connection/ad-account selection can use existing deterministic connect/select affordances before generation, but the launch-readiness user interaction has UI design in scope and must route through Open Design. Conversion-tracking and GBP readiness warnings/questions remain launch-agent conversational behavior after required platform connections exist; do not add unapproved deterministic readiness cards/panels or redesign Final Review.
 
 ### Q9 — What docs-link targets should the launch agent use for conversion-tracking setup guidance?
 
@@ -111,7 +111,7 @@ Status: auditable brainstorm / grill log for the AVE-13 local-Codex handoff. Thi
 
 - Existing `CampaignReview.tsx` and `LaunchConnectionConfirmationModal.tsx` already support launch-time account confirmation/change flows for Meta/Google connections and selected accounts/pages/customers.
 - Frontend API client already exposes `/facebook_get_connection`, `/facebook_get_pixels`, `/google_get_connection`, Google Ads account selection, and Google Business Profile REST methods.
-- Per TJ Q8, AVE-13 should not add deterministic conversion/GBP warning cards or change Final Review UX. Frontend work should be limited to any needed contract plumbing for required platform connection/select flows and chat/agent response option handling.
+- Per TJ Q8 plus follow-up clarification, AVE-13 should not add unapproved deterministic conversion/GBP warning cards or change Final Review UX, but it does include UI design for the launch-readiness interaction. Frontend work should combine Open Design-sourced UI treatment with deterministic contract plumbing for required platform connection/select flows and chat/agent response option handling.
 
 ### Supabase / data baseline
 
@@ -129,7 +129,7 @@ Status: auditable brainstorm / grill log for the AVE-13 local-Codex handoff. Thi
 - Product/CEO review: `CLEAR_WITH_CHANGES`. Incorporated explicit product ownership for the dual-platform gate, GBP scope/non-local handling, docs-anchor contract, prompt-replacement specificity, and both-missing blocker UX.
 - Engineering review: `CLEAR_WITH_CHANGES` after Planner verified two false subagent findings against `origin/main` (Google conversion helpers and readiness tests do exist). Incorporated valid engineering risks: suppress/dedupe old broad advisories when deterministic readiness facts exist, prefer a two-turn goal-switch pattern, preserve launch-time Google conversion guard, and harden Meta token handling during service extraction.
 - DevEx review: `CLEAR_WITH_CHANGES`. Incorporated branch/AGENTS repair, re-fetch/re-verify before branching, docs validation fallback for the docs repo, backend-owned QA package, local-plugin fallback language, and no-new-page docs guidance.
-- Design review: not applicable by default because AVE-13 plans no new visible UI/design surface. If implementation expands into substantive UI, route through local Open Design per `linear-executor`; fetch an existing artifact or create/commission one, and block as `BLOCKED_DESIGN` if Open Design is unavailable or cannot provide the artifact.
+- Design review: applicable. AVE-13 has UI design in scope for the launch-readiness interaction, so route through local Open Design per `linear-executor`; fetch an existing artifact or create/commission one, and block as `BLOCKED_DESIGN` if Open Design is unavailable or cannot provide the artifact.
 
 ## Unresolved / next grill queue
 

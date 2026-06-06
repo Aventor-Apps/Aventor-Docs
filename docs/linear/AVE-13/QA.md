@@ -2,7 +2,7 @@
 
 ## QA goal
 
-Verify that the launch-agent pre-generation flow is data-first, blocks only required account setup, warns conversationally about conversion/GBP readiness gaps, preserves Final Review UX, and includes the docs update.
+Verify that the launch-agent pre-generation flow is data-first, blocks only required account setup, uses Open Design-sourced UI for the launch-readiness interaction, warns conversationally about conversion/GBP readiness gaps, preserves Final Review unless explicitly approved, and includes the docs update.
 
 ## Acceptance-criteria coverage matrix
 
@@ -14,7 +14,7 @@ Verify that the launch-agent pre-generation flow is data-first, blocks only requ
 | 4 | Conversion gaps warn and ask switch/continue/pause | Tests for conversion-dependent goals; chat response options | Manual flow confirming options and docs links |
 | 5 | Structured switch/continue/pause semantics | Tests verifying structured decision payload application, goal mutation, accepted warning, pause/no-draft behavior, the preferred two-turn goal-switch flow, and no backend regex parsing of freeform user text | QA package summary with state transition notes |
 | 6 | GBP readiness fetched and non-blocking | Tests for selected/missing/unknown GBP | Manual chat copy if GBP missing |
-| 7 | Final Review unchanged / no readiness card | Frontend diff and tests if touched | Browser/manual check of review screen |
+| 7 | Open Design-sourced launch-readiness UI; Final Review avoids unapproved redesign/card scope | Open Design provenance, frontend diff/tests if touched | Browser/manual check of chat/connect/select/review surfaces |
 | 8 | Docs update included | Docs diff and link validation | Backend constants/tests reference final docs paths |
 | 9 | No schema/live mutation unless reviewed | Git diff has no migration or reviewer notes if migration added | Supabase/schema reviewer result if needed |
 | 10 | Final QA package exists | Four qa-package files committed | PR/Linear update links package |
@@ -54,7 +54,7 @@ Focused checks if frontend touched:
 
 - Account connection/select blocker recovery still works.
 - Switch/continue/pause response options render and submit structured decisions using existing option flow; no frontend/backend regex parsing of freeform text is introduced.
-- Final Review has no new conversion/GBP readiness card.
+- Launch-readiness UI follows the Open Design artifact/run; Final Review has no unapproved conversion/GBP readiness card or redesign.
 
 ### Docs (`Aventor-Docs`)
 
@@ -152,7 +152,7 @@ Expected:
 
 - Optional conversational guidance only.
 - No hard blocker.
-- Final Review unchanged.
+- Launch-readiness UI matches the Open Design source; Final Review remains unchanged unless explicitly covered by that approved artifact.
 
 ### Flow 6 — Docs links
 
@@ -183,14 +183,15 @@ Expected:
 
 ## UI / accessibility checks
 
-Only needed if frontend visible behavior changes. If no visible UI changes, record “not applicable — existing chat/options/modal only.”
+Required for AVE-13 because launch-readiness UI design is in scope. Record the Open Design artifact/run used, integration scope, and any `BLOCKED_DESIGN` condition before browser QA.
 
 If visible UI is touched:
 
 - Response options are keyboard accessible through existing components.
 - Button labels are concise and not ambiguous.
 - Warning copy is readable, not alarmist.
-- No layout regression in Final Review.
+- Launch-readiness UI uses the Open Design artifact/run and existing repo primitives/tokens.
+- No unapproved layout regression or readiness card/panel scope in Final Review.
 - Substantive UI work must be routed through local Open Design per `linear-executor`; if Open Design MCP/artifact fetch/artifact creation is unavailable, mark `BLOCKED_DESIGN` and stop.
 
 ## Regression areas

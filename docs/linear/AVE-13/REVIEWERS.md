@@ -23,7 +23,7 @@ Because AVE-13 touches OAuth-backed external integrations, campaign generation s
 - Are conversion-tracking gaps warnings/decisions, not hard blockers, after required accounts exist?
 - Are switch/continue/pause semantics implemented exactly through structured Mastra/orchestrator decisions, without deterministic regex parsing of freeform user responses?
 - Is GBP optional/non-blocking?
-- Is Final Review unchanged except existing supported warnings?
+- Is Final Review unchanged except any explicitly approved/Open Design-sourced AVE-13 interaction surface?
 - Is AVE-40 setup wizard still out of scope?
 
 ### Engineering / maintainability
@@ -76,8 +76,8 @@ Only run if visible frontend UI changes are made.
 
 - Does UI follow Aventor patterns?
 - Are response options clear, accessible, and wired to structured decision payloads rather than raw-text regex parsing?
-- Did Final Review avoid new readiness card/panel scope?
-- Was substantive UI work routed through local Open Design per `linear-executor`, with artifact/run provenance recorded, or blocked as `BLOCKED_DESIGN` if Open Design was unavailable?
+- Did Final Review avoid unapproved readiness card/panel scope or redesign?
+- Was the required launch-readiness UI design routed through local Open Design per `linear-executor`, with artifact/run provenance recorded, or blocked as `BLOCKED_DESIGN` if Open Design was unavailable?
 
 ### Conditional schema/data
 
