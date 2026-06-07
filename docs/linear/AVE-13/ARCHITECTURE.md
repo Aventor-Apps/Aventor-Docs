@@ -81,7 +81,7 @@ AVE-13 should add a **server-side launch readiness preflight** before parameter 
 4. **Goal decisions are idempotent and structured.** Switch/continue/pause decisions must survive retries, not duplicate prompts, and arrive as structured Mastra/orchestrator decisions rather than backend regex parsing of freeform text.
 5. **No token leakage.** Tokens remain server-side. State, logs, docs, QA artifacts, and Linear comments only contain safe status/identifier data.
 6. **No default DB migration.** Store readiness in campaign/session state if needed; avoid new tables unless implementation proves a strong need.
-7. **UI design is Open Design-owned.** AVE-13 includes launch-readiness UI design for chat/response-option/connect/select interactions; route it through Open Design and avoid unapproved conversion/GBP readiness cards or Final Review redesign.
+7. **UI scope is provider integration only.** AVE-13 UI scope is limited to required Google Ads and Meta integration/connect/select recovery. Conversion tracking, Meta Pixel, GBP, and switch/continue/pause decisions are Launch Agent conversational/structured-decision behavior, not right-panel readiness cards or Final Review redesign. If provider setup information touches the right-side panel, match the existing light media/info panel design before consulting Open Design.
 8. **Show all required blockers together.** If both Google and Meta required setup are missing, return both blockers in one response instead of making the user fix them sequentially.
 9. **Mastra owns user-response interpretation.** Deterministic code validates and applies structured decision payloads; it must not infer user intent from raw text with regex/string matching.
 
@@ -159,11 +159,12 @@ The Launch Agent should:
 
 Frontend should:
 
-- render existing chat and response options;
-- reuse existing connection/select modal flows for account blockers;
+- render existing chat and response options for Launch Agent conversational questions;
+- reuse existing connection/select modal flows for required Google/Meta account blockers;
 - not inspect tokens or provider APIs directly;
-- avoid new conversion/GBP readiness UI surfaces;
-- submit structured response-option payloads through existing Mastra/orchestrator decision handling rather than adding client/server regex parsing of freeform text.
+- avoid new conversion/GBP readiness UI surfaces, right-panel warning cards, or Final Review changes;
+- submit structured response-option payloads through existing Mastra/orchestrator decision handling rather than adding client/server regex parsing of freeform text;
+- if provider setup information is added to the right-side panel, match the existing `MainStudio`/`DesignPanel` light panel pattern (`bg-gray-50` shell, `bg-white`/`bg-zinc-50` cards, gray borders, rounded panels).
 
 ## Suggested readiness status model
 
@@ -322,7 +323,7 @@ No saved GBP selection / missing scope / fetch unknown
   -> if clearly non-local and no GBP signal: gbp.status = not_applicable
   -> no generation blocker
   -> Launch Agent may explain optional local campaign benefit and link docs only when relevant
-  -> Open Design-sourced launch-readiness UI, with Final Review layout unchanged unless explicitly approved
+  -> Launch Agent handles optional guidance conversationally; no GBP right-panel readiness card or Final Review layout change
 ```
 
 ### Sequence F — Both Google and Meta required setup missing
@@ -507,7 +508,11 @@ Most work belongs here. Codex can implement backend services, tests, state machi
 
 ### Frontend
 
-AVE-13 has visible launch-readiness UI design in scope. Route that work through local Open Design per `linear-executor`: fetch the relevant existing artifact/design bundle with `get_artifact()` or create/commission a new artifact and pull it with `get_artifact()`. Codex may handle backend/API/type plumbing and deterministic integration of the Open Design output. If Open Design is unavailable or cannot create/fetch the artifact, mark `BLOCKED_DESIGN` and stop.
+Only required Google Ads and Meta integration/connect/select recovery has AVE-13 visible UI scope. Conversion tracking, Meta Pixel, GBP, and switch/continue/pause decisions are handled by the Launch Agent using backend readiness facts and structured Mastra/orchestrator decisions. They should not become new deterministic right-panel readiness cards or Final Review surfaces.
+
+If provider setup information must be shown in the right-side panel, the source of truth is the existing app panel, not the generated dark artifact: `src/components/studio/MainStudio.tsx` wraps the right side in `bg-gray-50`, and `src/components/studio/DesignPanel.tsx` uses a light `bg-gray-50` shell with `bg-white`/`bg-zinc-50` cards, gray borders, rounded cards/panels, and gray/black typography.
+
+Use local Open Design per `linear-executor` only for substantive provider-integration UI design that cannot be resolved from existing patterns. Fetch the relevant artifact with `get_artifact()` or create/commission one and pull it with `get_artifact()`. If Open Design is unavailable or cannot create/fetch a needed artifact, mark `BLOCKED_DESIGN` and stop for that UI phase.
 
 ### Aventor-Docs
 

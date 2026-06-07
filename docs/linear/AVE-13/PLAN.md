@@ -32,7 +32,7 @@ As a campaign creator, when I ask Aventor to prepare a campaign for review, I wa
 4. **Conversion gaps warn, not block:** after required accounts exist, missing/unknown tracking does not hard-block generation. For conversion-dependent goals (`conversions`, `leads`, `sales`, or the repo's normalized campaign-goal/objective equivalents), launch agent warns and asks whether to switch goal, continue with warning, or pause for setup.
 5. **Goal-switch semantics:** structured switch/continue/pause decisions mutate or preserve state idempotently. Mastra owns natural-language interpretation and emits structured decisions; deterministic/backend code must not regex-parse freeform user responses to decide intent.
 6. **GBP is optional enrichment:** fetch saved GBP readiness/selection when the campaign/business context is local-relevant or an existing GBP selection exists; selected GBP becomes a positive fact. Missing/unknown/missing-scope GBP is conversational optional guidance, not a blocker. For clearly non-local campaigns with no GBP signal, mark GBP `not_applicable` and avoid irrelevant chatter.
-7. **Open Design-owned UI design:** AVE-13 includes launch-readiness UI design for chat/response-option/connect/select interactions. Use Open Design as the UI source of truth, reuse existing account connect/select patterns, and avoid unapproved conversion/GBP cards or Final Review redesign.
+7. **Provider integration UI only:** AVE-13 only has an interface for the required Google Ads and Meta integration/connect/select recovery. Conversion tracking readiness, GBP readiness, and switch/continue/pause decisions are Launch Agent conversational/structured-decision behavior, not new right-panel readiness cards. If the right-side panel is touched for provider setup information, match the existing light media/info panel design in `MainStudio`/`DesignPanel`; Open Design is secondary reference and must not override that existing panel background/style.
 8. **Docs update:** Aventor-Docs gets narrow Google conversion tracking + GBP readiness guidance. Meta warnings link to `/integrations/pixel-setup`. Do not implement the AVE-40 setup wizard.
 9. **Safety:** no live Supabase mutation by Planner. Prefer no schema migration. If implementation requires schema/RPC/policy changes, run schema/security review and do not apply live migration without approval.
 10. **QA package:** executor must create `docs/linear/AVE-13/qa-package/{checkpoint_manifest.md,browser_qa_prompt.md,validation_results.md,qa_readiness_result.json}` before final PR/Linear closeout.
@@ -172,17 +172,18 @@ Add tests before implementation, e.g. `test/mastra/launch-readiness-preflight.te
 - Update launch prompt to align with new backend truth. Replace the current "do not ask the user to connect Meta or Google during Finalize Campaign" instruction with: "Required Google Ads and Meta account connection/selection is enforced by backend preflight before parameter generation. If a required account blocker is active, explain which account setup is needed and direct the user to the existing connect/select UI. Do not proceed with generation until required account blockers are resolved."
 - Replace/bypass broad advisory questions when readiness facts already answer them. If required account blockers are active, suppress marketing-advisory pixel/GBP questions for that turn so the user sees one coherent setup blocker set.
 
-### Phase 5 — Open Design UI and frontend contract plumbing
+### Phase 5 - Meta/Google integration UI and frontend contract plumbing
 
-**Owner:** Open Design for UI design source of truth; Codex for backend/API/state/tests and deterministic integration of Open Design output.
+**Owner:** Codex for deterministic contract/state/tests; Open Design only for provider integration UI if existing patterns are insufficient.
 
-- Inspect adjacent chat, response-option, account connect/select, modal, token, and shared component patterns before UI work.
-- Fetch the relevant existing Open Design artifact/design bundle with `get_artifact()` when available; if none exists, create/commission a new artifact/run (`create_project` if needed, `start_run`, poll `get_run`, then `get_artifact`) that reuses repo primitives/tokens and existing chat/connect/select patterns.
-- Record Open Design artifact/run provenance, inspected design-system files, integration scope, and blocker status in the workpad before editing UI code.
-- Integrate the Open Design-sourced launch-readiness interaction for required account setup and switch/continue/pause decisions, while preserving structured `finalizationDecision` / `finalizationDecisions` payloads.
-- Verify existing chat response options submit structured decisions into Mastra/orchestrator; do not implement frontend/backend regex parsing of freeform user text.
+- Scope the frontend work to required Google Ads + Meta integration/connect/select recovery only.
+- Do not add deterministic readiness cards, right-panel warning cards, or Final Review redesign for conversion tracking, Meta Pixel, GBP, or switch/continue/pause questions. Those topics are handled by the Launch Agent conversation using backend facts and structured decisions.
+- Inspect existing chat response-option plumbing and the existing account connect/select flows before editing. Verify options submit structured `finalizationDecision` / `finalizationDecisions` payloads; do not implement frontend/backend regex parsing of freeform user text.
+- If provider setup information needs to appear in the right-side panel, use the existing media/info panel as the visual source of truth: `MainStudio.tsx` wraps the right panel in `bg-gray-50`; `DesignPanel.tsx` uses a light `bg-gray-50` shell with `bg-white`/`bg-zinc-50` cards, gray borders, rounded panels, and gray/black text. Do not apply the dark Open Design artifact background to this panel.
+- Use Open Design MCP only when substantive provider-integration UI design is needed beyond existing app patterns. Fetch an existing relevant artifact with `get_artifact()` when available; otherwise create/commission one (`create_project` if needed, `start_run`, poll `get_run`, then `get_artifact`). If the MCP is unavailable or a required artifact cannot be created/fetched, mark `BLOCKED_DESIGN` and stop for that UI phase.
+- Record Open Design artifact/run provenance, inspected existing panel/component files, integration scope, and blocker status in the workpad before editing visible UI.
 - Update `src/utils/api.ts` types only if a frontend-visible route/response is introduced.
-- Avoid unapproved conversion/GBP readiness cards or Final Review layout changes; if Open Design MCP/artifact fetch/artifact creation is unavailable, mark `BLOCKED_DESIGN` and stop.
+- Final Review remains unchanged.
 
 ### Phase 6 — Aventor-Docs update
 
@@ -274,10 +275,14 @@ Run independent reviewers (see `REVIEWERS.md`), repair blocking findings, then c
 
 ## UI / UX considerations
 
+- Only required Google Ads and Meta integration/connect/select recovery has an interface in AVE-13.
+- Conversion readiness, Meta Pixel readiness, GBP readiness, and switch/continue/pause questions are Launch Agent conversational behavior backed by structured Mastra decisions. They should not be implemented as right-panel readiness cards or Final Review UI.
 - Account setup blockers: clear, short Launch Agent copy plus existing connection/select UI.
-- Conversion warning options should be short: switch goal, continue with warning, pause for setup.
-- Missing GBP copy should explain optional benefit for local campaigns without blocking.
-- Launch-readiness UI follows Open Design output; Final Review remains unchanged unless explicitly approved by the Open Design artifact and TJ scope.
+- If provider setup information is surfaced in the right-side panel, match the existing media/info panel design: light `bg-gray-50` right-panel shell, `bg-white` or `bg-zinc-50` information cards, gray borders, rounded panels, and gray/black typography from `MainStudio.tsx` and `DesignPanel.tsx`.
+- The generated Open Design artifact can be used only as secondary provider-integration reference; it is not authoritative for the right-side panel background because the app already has a light panel pattern.
+- Warning option copy should be short in the Launch Agent: switch goal, continue with warning, pause for setup.
+- Missing GBP copy should explain optional benefit for local campaigns conversationally without blocking.
+- Final Review remains unchanged unless TJ explicitly expands scope.
 - Browser screenshots/video are optional by default.
 
 ## Risks / unknowns
@@ -311,4 +316,4 @@ Do not create Linear subtasks unless TJ explicitly says `create the subtasks`.
 
 ## Planner review notes
 
-Planner review gates were run in CEO/product, engineering, and DevEx modes. Verdict: `CLEAR_WITH_CHANGES`; required doc clarifications were incorporated before branch handoff. Design review/Open Design is required for AVE-13 because launch-readiness UI design is in scope. The plan remains high enough risk to warrant implementation-time engineering/security/API-contract/testing/docs reviewers because it touches OAuth-backed external integrations and campaign generation state. It should avoid DB schema changes and avoid unapproved Final Review/card redesign scope.
+Planner review gates were run in CEO/product, engineering, and DevEx modes. Verdict: `CLEAR_WITH_CHANGES`; required doc clarifications were incorporated before branch handoff. Design review/Open Design is required only if AVE-13 changes the visible Google/Meta provider integration interface beyond existing app patterns. The plan remains high enough risk to warrant implementation-time engineering/security/API-contract/testing/docs reviewers because it touches OAuth-backed external integrations and campaign generation state. It should avoid DB schema changes, avoid deterministic freeform response parsing, and avoid unapproved conversion/GBP/Final Review card or panel redesign scope.

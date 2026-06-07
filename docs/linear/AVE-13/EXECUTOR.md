@@ -75,7 +75,7 @@ Use these in addition to the source docs and repo tooling:
 - Superpowers process skills: `using-git-worktrees`, `writing-plans`, `test-driven-development`, `verification-before-completion`, and `requesting-code-review` as applicable.
 - Backend/API/security/data skills: `ecc:backend-patterns`, `ecc:api-design`, `ecc:error-handling`, `ecc:security-review`, `api-contract-reviewer`, and `supabase-postgres-best-practices` when schema/data persistence is touched.
 - Supabase plugin in read-only mode for project/schema context unless TJ explicitly approves a write/migration action.
-- Open Design MCP workflow for required AVE-13 UI design: `get_artifact()` for existing artifacts, or `create_project` / `start_run` / `get_run` / `get_artifact` for a new artifact when none exists; block as `BLOCKED_DESIGN` if unavailable.
+- Open Design MCP workflow for substantive Google/Meta provider-integration UI only when existing app patterns are insufficient: `get_artifact()` for existing artifacts, or `create_project` / `start_run` / `get_run` / `get_artifact` for a new artifact when none exists; block that provider-UI phase as `BLOCKED_DESIGN` if unavailable.
 
 ## Implementation routing
 
@@ -86,14 +86,17 @@ Codex may own:
 - Aventor-Docs markdown/docs updates;
 - validation, reviewer coordination, QA package, PR/Linear updates.
 
-Substantive visible UI/design/styling/layout/component work is required for AVE-13's launch-readiness interaction. Follow the `linear-executor` Open Design route:
+Visible UI scope for AVE-13 is limited to required Google/Meta integration/connect/select recovery. Conversion tracking readiness, Meta Pixel readiness, GBP readiness, and switch/continue/pause questions are Launch Agent conversational/structured-decision behavior and must not become new right-panel readiness cards or Final Review surfaces.
 
-1. Inspect the repo design system, shared primitives, and adjacent chat/connect/select examples first.
-2. Fetch the relevant existing Open Design artifact/design bundle with `get_artifact()` when available.
-3. If no suitable artifact exists, create/commission a new Open Design artifact/run (`create_project` if needed, `start_run`, poll `get_run`, then `get_artifact`) and require reuse of repo primitives/tokens plus existing chat/response-option/connect patterns.
-4. Record the Open Design project/artifact/run, design-system files inspected, integration scope, and blocker status in the workpad before editing UI code.
-5. If Open Design MCP, artifact fetch, or artifact creation is unavailable/blocked, mark UI work `BLOCKED_DESIGN` and stop. Do not fall back to plain Codex, Claude Code, Kimi, or raw Ollama for substantive UI work.
-6. Codex may implement backend/API/state/tests and deterministic integration of the Open Design output only.
+For any provider-integration UI work:
+
+1. Inspect the repo design system, shared primitives, existing account connect/select examples, and `MainStudio`/`DesignPanel` right-side panel patterns first.
+2. If provider setup information touches the right-side panel, match the existing light media/info panel style (`bg-gray-50` shell, `bg-white`/`bg-zinc-50` cards, gray borders, rounded panels, gray/black text); do not apply the dark Open Design artifact background.
+3. Use Open Design only if substantive provider-integration UI design is needed beyond existing app patterns. Fetch the relevant artifact with `get_artifact()` when available.
+4. If no suitable artifact exists, create/commission a new Open Design artifact/run (`create_project` if needed, `start_run`, poll `get_run`, then `get_artifact`) and require reuse of repo primitives/tokens plus existing connect/select/panel patterns.
+5. Record the Open Design project/artifact/run, existing panel/component files inspected, integration scope, and blocker status in the workpad before editing visible UI.
+6. If Open Design MCP, artifact fetch, or artifact creation is unavailable/blocked for a needed provider UI, mark that UI phase `BLOCKED_DESIGN` and stop. Do not fall back to plain Codex, Claude Code, Kimi, or raw Ollama for substantive UI work.
+7. Codex may implement backend/API/state/tests and deterministic integration of structured decision payloads only.
 
 ## Phase checklist
 
@@ -134,12 +137,14 @@ Substantive visible UI/design/styling/layout/component work is required for AVE-
 - [ ] Update launch prompt to remove conflict with required account blockers using the exact replacement direction in `PLAN.md`.
 - [ ] Suppress/replace broad pixel/GBP advisory questions when readiness facts exist.
 
-### Phase 5 — Open Design UI and frontend integration
+### Phase 5 - Meta/Google provider UI and frontend integration
 
-- [ ] Route the launch-readiness UI through Open Design, recording artifact/run provenance before editing UI code.
-- [ ] Verify chat response options and connection modal recover the blocker/warning flows through structured decision payloads, without adding regex parsing of raw user text.
+- [ ] Scope visible UI work to required Google/Meta integration/connect/select recovery only.
+- [ ] Verify chat response options and connection modal recover blocker/warning flows through structured decision payloads, without adding regex parsing of raw user text.
+- [ ] If provider setup information touches the right-side panel, match the existing light `MainStudio`/`DesignPanel` media/info panel style.
+- [ ] Use Open Design only for substantive provider-integration UI beyond existing patterns, recording artifact/run provenance before editing UI code; block that UI phase as `BLOCKED_DESIGN` if the MCP/artifact cannot be used.
 - [ ] Update `src/utils/api.ts` only if a frontend-visible contract is introduced.
-- [ ] No unapproved Final Review readiness cards or redesign beyond the approved Open Design scope.
+- [ ] No unapproved conversion/GBP readiness cards or Final Review redesign.
 
 ### Phase 6 — Docs
 

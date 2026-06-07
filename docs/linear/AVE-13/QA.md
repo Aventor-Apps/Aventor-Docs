@@ -2,7 +2,7 @@
 
 ## QA goal
 
-Verify that the launch-agent pre-generation flow is data-first, blocks only required account setup, uses Open Design-sourced UI for the launch-readiness interaction, warns conversationally about conversion/GBP readiness gaps, preserves Final Review unless explicitly approved, and includes the docs update.
+Verify that the launch-agent pre-generation flow is data-first, blocks only required Google/Meta account setup, keeps conversion/GBP readiness gaps conversational through the Launch Agent, preserves Final Review, avoids new readiness cards/panels for conversion/GBP, and includes the docs update. Only Google/Meta integration/connect/select recovery has AVE-13 UI scope.
 
 ## Acceptance-criteria coverage matrix
 
@@ -14,7 +14,7 @@ Verify that the launch-agent pre-generation flow is data-first, blocks only requ
 | 4 | Conversion gaps warn and ask switch/continue/pause | Tests for conversion-dependent goals; chat response options | Manual flow confirming options and docs links |
 | 5 | Structured switch/continue/pause semantics | Tests verifying structured decision payload application, goal mutation, accepted warning, pause/no-draft behavior, the preferred two-turn goal-switch flow, and no backend regex parsing of freeform user text | QA package summary with state transition notes |
 | 6 | GBP readiness fetched and non-blocking | Tests for selected/missing/unknown GBP | Manual chat copy if GBP missing |
-| 7 | Open Design-sourced launch-readiness UI; Final Review avoids unapproved redesign/card scope | Open Design provenance, frontend diff/tests if touched | Browser/manual check of chat/connect/select/review surfaces |
+| 7 | Google/Meta provider integration UI only; conversion/GBP and switch/continue/pause handled by Launch Agent structured decisions; Final Review avoids unapproved redesign/card scope | Workpad scope notes, frontend diff/tests only if provider UI touched | Browser/manual check of existing connect/select recovery and right-side panel style if touched |
 | 8 | Docs update included | Docs diff and link validation | Backend constants/tests reference final docs paths |
 | 9 | No schema/live mutation unless reviewed | Git diff has no migration or reviewer notes if migration added | Supabase/schema reviewer result if needed |
 | 10 | Final QA package exists | Four qa-package files committed | PR/Linear update links package |
@@ -54,7 +54,7 @@ Focused checks if frontend touched:
 
 - Account connection/select blocker recovery still works.
 - Switch/continue/pause response options render and submit structured decisions using existing option flow; no frontend/backend regex parsing of freeform text is introduced.
-- Launch-readiness UI follows the Open Design artifact/run; Final Review has no unapproved conversion/GBP readiness card or redesign.
+- Only required Google/Meta connect/select recovery has UI scope; conversion/GBP warnings and switch/continue/pause remain Launch Agent conversational/structured-decision behavior, with no new readiness card/panel or Final Review redesign.
 
 ### Docs (`Aventor-Docs`)
 
@@ -152,7 +152,7 @@ Expected:
 
 - Optional conversational guidance only.
 - No hard blocker.
-- Launch-readiness UI matches the Open Design source; Final Review remains unchanged unless explicitly covered by that approved artifact.
+- GBP guidance appears conversationally through the Launch Agent only; no new GBP readiness card/panel appears in the right panel or Final Review.
 
 ### Flow 6 — Docs links
 
@@ -183,16 +183,18 @@ Expected:
 
 ## UI / accessibility checks
 
-Required for AVE-13 because launch-readiness UI design is in scope. Record the Open Design artifact/run used, integration scope, and any `BLOCKED_DESIGN` condition before browser QA.
+Required only if AVE-13 touches visible provider integration UI. Conversion tracking, Meta Pixel, GBP, and switch/continue/pause decisions are Launch Agent conversation/structured decisions and are not right-panel readiness cards.
 
-If visible UI is touched:
+If visible Google/Meta provider UI is touched:
 
 - Response options are keyboard accessible through existing components.
 - Button labels are concise and not ambiguous.
 - Warning copy is readable, not alarmist.
-- Launch-readiness UI uses the Open Design artifact/run and existing repo primitives/tokens.
-- No unapproved layout regression or readiness card/panel scope in Final Review.
-- Substantive UI work must be routed through local Open Design per `linear-executor`; if Open Design MCP/artifact fetch/artifact creation is unavailable, mark `BLOCKED_DESIGN` and stop.
+- Existing account connection/select recovery remains usable.
+- Any right-side panel provider information matches the current media/info panel style in `MainStudio.tsx` and `DesignPanel.tsx`: light `bg-gray-50` shell, white/zinc-50 cards, gray borders, rounded panels, and gray/black text.
+- Do not apply the dark Open Design artifact background to the right-side panel.
+- No unapproved conversion/GBP readiness card, right-panel warning surface, or Final Review redesign is introduced.
+- If substantive provider-integration UI design is needed beyond existing patterns, route it through local Open Design per `linear-executor`; if Open Design MCP/artifact fetch/artifact creation is unavailable, mark `BLOCKED_DESIGN` and stop for that UI phase.
 
 ## Regression areas
 
