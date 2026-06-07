@@ -41,14 +41,17 @@ No live Supabase data/schema mutation is allowed without explicit TJ approval un
 
 ## UI routing
 
-AVE-13 includes substantive UI design for the launch-readiness user interaction. Follow the local `linear-executor` Open Design route instead of direct Claude/Kimi/plain-Codex UI work:
+AVE-13 visible UI scope is limited to required Google/Meta integration/connect/select recovery. Conversion tracking readiness, Meta Pixel readiness, GBP readiness, and switch/continue/pause questions are Launch Agent conversational/structured-decision behavior and must not become new right-panel readiness cards or Final Review surfaces.
 
-1. Inspect repo design-system files and adjacent chat/connect/select patterns first.
-2. Fetch the relevant existing Open Design artifact/design bundle with `get_artifact()` when available.
-3. If no suitable artifact exists, create/commission a new Open Design artifact with `create_project` if needed, `start_run`, `get_run`, then `get_artifact`, requiring reuse of repo primitives/tokens and the existing chat/response-option/connect patterns.
-4. Record the Open Design source/run and integration scope in the workpad before editing UI code.
-5. If Open Design MCP/artifact fetch/artifact creation is unavailable or blocked, mark the UI phase `blocked`/`BLOCKED_DESIGN` and stop. Do not fall back to plain Codex, Claude Code, Kimi, or raw Ollama for substantive UI/design work.
-6. Codex may own backend/API/state/tests and deterministic integration of the Open Design output, but Open Design is the UI design source of truth.
+For any provider-integration UI work:
+
+1. Inspect repo design-system files, adjacent account connect/select patterns, and the existing `MainStudio`/`DesignPanel` right-side panel patterns first.
+2. If provider setup information touches the right-side panel, match the existing light media/info panel style (`bg-gray-50` shell, `bg-white`/`bg-zinc-50` cards, gray borders, rounded panels, gray/black text); do not apply the generated dark Open Design artifact background.
+3. Use Open Design only if substantive Google/Meta provider-integration UI design is needed beyond existing app patterns.
+4. Fetch the relevant existing Open Design artifact/design bundle with `get_artifact()` when available.
+5. If no suitable artifact exists for required provider UI, create/commission a new Open Design artifact with `create_project` if needed, `start_run`, `get_run`, then `get_artifact`, requiring reuse of repo primitives/tokens and existing connect/select/panel patterns.
+6. Record the Open Design source/run and integration scope in the workpad before editing visible UI code.
+7. If Open Design MCP/artifact fetch/artifact creation is unavailable or blocked for required provider UI, mark that provider-UI phase `blocked`/`BLOCKED_DESIGN` and stop. Do not fall back to plain Codex, Claude Code, Kimi, or raw Ollama for substantive UI/design work.
 
 Codex may still own backend contracts, tests, validation, docs, and non-visual frontend API/type plumbing.
 
