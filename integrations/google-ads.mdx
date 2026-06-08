@@ -5,55 +5,72 @@ sidebarTitle: "Google Ads (Coming Soon)"
 ---
 
 <Info>
-Google Ads integration is coming soon. This page will be updated when the feature is available.
+Google Ads campaign launch is rolling out through Aventor's launch workflow. Before campaign parameters are prepared for review, Aventor checks your connected Google Ads account data first and asks only for the setup decisions it cannot verify.
 </Info>
 
-## Planned Features
+## Account connection and customer selection
 
-### Search Campaigns
+Connect Google Ads from the Aventor launch flow, then select the customer account Aventor should use for campaign preparation and launch.
 
-- Text ads with AI-generated headlines and descriptions
-- Keyword targeting based on your brand and audience
-- Automated bidding strategies
+What Aventor checks:
 
-### Performance Max Campaigns
+- A Google Ads connection exists for your Aventor account.
+- A customer account is selected.
+- The selected customer can be read by Aventor with the granted OAuth permissions.
+- Basic account readiness, such as account status and billing visibility, can be verified when Google Ads exposes it.
 
-- Multi-format campaigns across Google properties
-- Use generated images as creative assets
-- Automated placements (Search, Display, YouTube, Gmail, Maps)
+If the connection or customer selection is missing, Aventor pauses launch preparation and sends you back to the existing connect/select account flow. Campaign parameter drafts are not generated until the required Google Ads and Meta account setup is complete.
 
-### Display Campaigns
+## Conversion tracking readiness
 
-- Banner ads with generated creatives
-- Audience targeting and remarketing
-- Responsive display ad formats
+For conversion-focused goals, Aventor checks Google Ads conversion readiness before generating launch-ready parameters. This includes enabled primary conversion actions and biddable customer conversion goals when the Google Ads API can read them.
 
-## Current Workaround
+If conversion tracking cannot be verified, Aventor treats it as a warning, not an account-setup blocker. You can:
 
-Until Google Ads integration is live, you can:
+- switch to a traffic-focused goal;
+- continue with the warning if you are comfortable reviewing the campaign anyway; or
+- pause and set up conversion tracking in Google Ads first.
 
 <Steps>
-  <Step title="Generate Images">
-    Create ad visuals in the Aventor Studio.
+  <Step title="Open conversion goals">
+    In Google Ads, open Goals or Conversions from your selected customer account.
   </Step>
-  <Step title="Download">
-    Export images using the download button.
+  <Step title="Create or verify a conversion action">
+    Confirm that the website, lead, purchase, or other relevant action is enabled and marked primary when it should drive bidding.
   </Step>
-  <Step title="Upload to Google Ads">
-    Upload images directly in [Google Ads](https://ads.google.com).
+  <Step title="Verify biddable goals">
+    Confirm the customer conversion goal for the action category is biddable if you want Google to optimize for conversions.
   </Step>
-  <Step title="Configure Campaign">
-    Set up targeting, bidding, and budget in Google Ads interface.
+  <Step title="Retry Aventor launch readiness">
+    Return to Aventor and continue launch preparation after setup is complete.
   </Step>
 </Steps>
 
-## What You'll Need
+<Info>
+If Google Ads permissions or provider availability prevent Aventor from reading conversion data, Aventor records the status as unknown or unavailable instead of claiming tracking is missing.
+</Info>
 
-When Google Ads integration launches, you'll need:
+## Google Business Profile readiness
 
-- Google Ads account
-- Billing configured in Google Ads
-- At least one active campaign type available
+Google Business Profile is optional enrichment for local businesses. When your campaign appears local or a Business Profile selection already exists, Aventor checks for a saved Google Business Profile location.
+
+- A selected Business Profile is a positive readiness fact and can help local campaign context.
+- Missing Business Profile access, missing scope, or no selected location does not block campaign parameter generation.
+- For clearly non-local campaigns with no Business Profile signal, Aventor skips this guidance.
+
+If you want to use Business Profile context, connect Google with Business Profile access and select the relevant location in Aventor when prompted.
+
+## Meta Pixel link from launch warnings
+
+Meta Pixel readiness is documented separately. When a Meta warning appears, use [Meta Pixel setup](/integrations/pixel-setup) for setup guidance.
+
+## What you'll need
+
+- Google Ads account access.
+- A selected Google Ads customer account.
+- Billing configured in Google Ads when you intend to launch.
+- Conversion actions/goals for conversion-focused campaigns.
+- Optional: Google Business Profile access and a selected location for local-business enrichment.
 
 ## Stay Updated
 
