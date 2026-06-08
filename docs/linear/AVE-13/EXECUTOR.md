@@ -86,7 +86,7 @@ Codex may own:
 - Aventor-Docs markdown/docs updates;
 - validation, reviewer coordination, QA package, PR/Linear updates.
 
-Visible UI scope for AVE-13 is limited to required Google/Meta integration/connect/select recovery. Conversion tracking readiness, Meta Pixel readiness, GBP readiness, and switch/continue/pause questions are Launch Agent conversational/structured-decision behavior and must not become new right-panel readiness cards or Final Review surfaces.
+Visible UI scope for AVE-13 is limited to selected-provider Google/Meta integration/connect/select recovery. Conversion tracking readiness, Meta Pixel readiness, GBP readiness, and switch/continue/pause questions are Launch Agent conversational/structured-decision behavior and must not become new right-panel readiness cards or Final Review surfaces.
 
 For any provider-integration UI work:
 
@@ -110,8 +110,8 @@ For any provider-integration UI work:
 
 ### Phase 1 — Tests first
 
-- [ ] Add failing backend tests for launch readiness preflight.
-- [ ] Cover missing Google, missing Meta, tracking missing, tracking unknown, GBP states, structured switch/continue/pause decisions, and no-draft persistence on blockers.
+- [ ] Add failing backend tests for launch readiness preflight and selected-provider account review.
+- [ ] Cover Google-only, Meta-only, both-provider account review, missing selected Google, missing selected Meta, tracking missing, tracking unknown, GBP states, structured switch/continue/pause decisions, and no-draft persistence on blockers.
 - [ ] Run focused tests to confirm expected failures before implementation.
 
 ### Phase 2 — Provider readiness services
@@ -131,7 +131,7 @@ For any provider-integration UI work:
 ### Phase 4 — Param-generate integration
 
 - [ ] Integrate preflight before parameter drafts persist.
-- [ ] Block whole generation for missing required Google/Meta setup.
+- [ ] Block generation only for missing selected-provider Google/Meta setup; unselected providers must not block.
 - [ ] Add conversion warning decision group for conversion-dependent goals.
 - [ ] Implement structured switch/continue/pause decision application idempotently. Prefer the two-turn goal-switch pattern documented in `ARCHITECTURE.md`; do not add recursive in-turn generation unless existing code already supports it safely. Do not add deterministic regex/string parsing of freeform user responses; Mastra/orchestrator owns natural-language interpretation and must emit structured `finalizationDecision` / `finalizationDecisions` payloads.
 - [ ] Update launch prompt to remove conflict with required account blockers using the exact replacement direction in `PLAN.md`.
@@ -139,7 +139,7 @@ For any provider-integration UI work:
 
 ### Phase 5 - Meta/Google provider UI and frontend integration
 
-- [ ] Scope visible UI work to required Google/Meta integration/connect/select recovery only.
+- [ ] Scope visible UI work to selected-provider Google/Meta integration/connect/select recovery only.
 - [ ] Verify chat response options and connection modal recover blocker/warning flows through structured decision payloads, without adding regex parsing of raw user text.
 - [ ] If provider setup information touches the right-side panel, match the existing light `MainStudio`/`DesignPanel` media/info panel style.
 - [ ] Use Open Design only for substantive provider-integration UI beyond existing patterns, recording artifact/run provenance before editing UI code; block that UI phase as `BLOCKED_DESIGN` if the MCP/artifact cannot be used.

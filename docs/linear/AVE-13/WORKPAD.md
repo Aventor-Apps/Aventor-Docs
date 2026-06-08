@@ -33,10 +33,10 @@
 ## Functional vs UI/Design Ownership Ledger
 | Item | Owner/status | Notes |
 | --- | --- | --- |
-| Backend dual Google+Meta account readiness gate | Codex functional / implemented | Runs before launch parameter draft persistence. |
+| Backend selected-provider account readiness gate | Codex functional / implemented | Must run before launch parameter draft persistence; Meta-only requires Meta only, Google-only requires Google only, both selected requires both. |
 | Backend conversion readiness warnings and structured decisions | Codex functional / implemented | No deterministic regex/freeform parsing for switch/continue/pause. |
 | Backend GBP optional readiness facts | Codex functional / implemented | No hard blocker; Launch Agent handles optional guidance conversationally. |
-| Google/Meta provider integration UI | Existing app patterns + Open Design only if needed / scoped | Only interface scope for AVE-13. Use existing connect/select recovery and match existing right-side light panel if touched. |
+| Google/Meta provider integration UI | Existing app patterns + Open Design secondary reference / implemented with browser advisory | Account review panel must appear every finalization and show selected providers only. Use existing connect/select recovery and match existing right-side light panel. |
 | Conversion/Meta Pixel/GBP readiness UI | Launch Agent conversation / not UI scope | Do not build right-panel readiness cards or Final Review UI. |
 | Frontend structured response-option plumbing | Codex deterministic integration / unchanged unless needed | Response options must submit structured decisions; no regex parsing of freeform user text. |
 | Aventor-Docs Google conversion + GBP guidance | Codex docs / implemented | Narrow docs update only; no AVE-40 wizard claims. |
@@ -50,10 +50,10 @@
 - [x] Integrate pre-generation readiness before draft persistence.
 - [x] Update Aventor-Docs.
 - [x] Run validation, reviewers, agent-browser QA, QA package for backend/docs scope.
-- [ ] If future provider integration UI edits are required, verify against existing right-side panel style and rerun browser QA.
+- [x] Implement selected-provider account review panel, verify against existing right-side panel style, and capture agent-browser screenshots.
 
 ## Backend/docs implementation update
-- Added launch-readiness domain at src/mastra/lib/launch-readiness.ts with dual Google+Meta account gate, conversion warnings, GBP optional snapshot, docs links, and structured switch/continue/pause decision application.
+- Added launch-readiness domain at src/mastra/lib/launch-readiness.ts; revising it to selected-provider account gating plus conversion warnings, GBP optional snapshot, docs links, and structured switch/continue/pause decision application.
 - Added shared Meta Pixel service at src/lib/meta/pixels.ts and route delegation using Authorization bearer headers instead of query-string access tokens.
 - Added shared Google conversion readiness service at src/lib/google-ads/conversion-readiness.ts for AVE-13 preflight reuse.
 - Integrated launch readiness into param_generate before budget allocation, parameter draft generation, and persistence.
@@ -89,3 +89,61 @@
 - Independent code/security/TypeScript review checklist completed; see `qa-artifacts/code-review.md`.
 - agent-browser was used for local QA evidence.
 - Backend/docs functional scope is green. UI scope is narrowed to existing Google/Meta provider integration recovery; conversion/GBP readiness is Launch Agent conversational behavior and should not be implemented as right-panel readiness cards.
+
+
+## 2026-06-07 Executor continuation
+- Re-entered `linear-executor` flow after TJ requested implementation continuation.
+- Re-read workpad, PLAN, EXECUTOR, QA, and current QA package.
+- Found stale QA package state from pre-clarification `BLOCKED_DESIGN`; refreshed canonical backend QA package to `READY_WITH_SETUP_CHECKPOINTS`.
+- Validation rerun:
+  - `npx tsx --test test/mastra/launch-readiness-preflight.test.ts test/mastra/launch-readiness-delegate.test.ts`: PASS, 6 tests.
+  - `npm run typecheck`: PASS.
+  - `npm test`: PASS, 1049 tests.
+  - `npm run build`: PASS.
+  - `python -m json.tool docs.json > $null` in Aventor-Docs: PASS.
+  - `git diff --check` in Aventor, Aventor-backend, and Aventor-Docs: PASS with LF-to-CRLF warnings only.
+  - `agent-browser --version`: PASS, `agent-browser 0.26.0`.
+- Browser QA setup checkpoint: both local frontend/backend AVE-13 worktrees have `.env.example` only and no `.env`; full authenticated/provider-state browser QA needs local env/auth and safe seeded Google/Meta/GBP states. This is recorded as setup checkpoint, not implementation blocker.
+- Next action: commit/push refreshed backend QA package and updated code-review/workpad artifacts, then proceed to PR/Linear closeout if requested/available.
+
+
+## 2026-06-07 PR closeout metadata
+- Opened backend PR: https://github.com/Aventor-Apps/Aventor-backend/pull/54
+- Opened frontend docs PR: https://github.com/Aventor-Apps/Aventor/pull/60
+- Opened docs PR: https://github.com/Aventor-Apps/Aventor-Docs/pull/1
+- Updated canonical QA checkpoint manifest with PR URLs.
+
+## 2026-06-07 Selected-provider account review correction
+- TJ clarified the account review gate is selected-provider scoped, not dual-platform mandatory: Meta-only requires Meta only, Google-only requires Google only, and both selected requires both.
+- The right-side account review panel must appear on every Finalize Campaign entry, including when selected accounts are already connected, and requires explicit user confirmation before parameter generation.
+- The account review panel temporarily replaces the media/design panel during launch prep, then the normal final review flow resumes after parameter generation.
+- Conversion tracking, Meta Pixel readiness, GBP readiness, and switch/continue/pause questions remain Launch Agent conversational/structured-decision behavior, not right-panel readiness cards.
+- Open Design artifact `AVE-13-launch-readiness-ui` was rechecked; it remains secondary reference only because it uses dark styling and stale dual-platform copy. Implementation must match the existing light `MainStudio`/`DesignPanel` right-panel pattern.
+## 2026-06-08 Implementation closeout update
+- Frontend implemented the selected-provider launch account review panel at `src/components/studio/LaunchAccountReviewPanel.tsx`, using the existing light right-side panel treatment and existing Google/Meta OAuth + account-selection modals.
+- Frontend state now stores `launchAccountReview`; pending review takes precedence over generic finalization loading, suppresses final-review refresh while pending, restores on session reload, and sends structured `launchAccountReviewConfirmed: true` on `Continue with these accounts`.
+- Backend direct `start_finalization` now evaluates selected-platform account readiness at `depth: "accounts"`, persists `phase: "account_connect"`, and emits `mode: "account_review_start"` before any parameter generation.
+- Backend account-review confirmation now advances to `mode: "parameter_generation_start"` instead of reopening the account review panel, then runs full launch readiness/parameter generation.
+- Backend stream keepalive now uses a safe controller wrapper so keepalive enqueue after stream close does not throw `ERR_INVALID_STATE`.
+- Conversion tracking, Meta Pixel, GBP, and switch/continue/pause questions remain Launch Agent conversation/structured decision scope; no right-panel readiness cards were added.
+- TDD additions: frontend account-review, typing, and campaign-restore tests; backend direct finalization/account review and safe-stream tests.
+- Validation: frontend `npm run typecheck`, `npm run test:unit` (392 tests), `npm run lint`, and `npm run build` all PASS. Backend `npm run typecheck`, `npm test` (1055 tests), and `npm run build` all PASS. Docs `python -m json.tool docs.json > $null` PASS. `git diff --check` PASS in all three worktrees with LF-to-CRLF warnings only.
+- Browser QA: local backend `http://127.0.0.1:3003/health` returned `{"ok":true}` and frontend `http://127.0.0.1:5175/` returned `200`; agent-browser captured Meta-only and Google-only account-review panel screenshots. Advisory: the full natural Finalize Campaign button click was not rerun after final non-visual fixes because the active browser profile was no longer authenticated; automated tests cover the direct request-context/state transition.
+- QA artifacts refreshed under backend `docs/linear/AVE-13/qa-package/` and frontend `docs/linear/AVE-13/qa-artifacts/browser-qa.md`.
+
+## 2026-06-08 Reviewer repair closeout
+- Independent ECC prompt-backed reviewers were run via agent orchestration:
+  - Bacon / code+TypeScript found P1 selected-media bypass; fixed in backend direct finalization routing and covered by `selected media request context does not bypass start_finalization account review`.
+  - Parfit / security found P2 Meta Graph token-in-query transport; fixed by moving changed Graph helpers to `Authorization: Bearer` and covered by `test/metaGraphTokenTransport.test.ts`.
+  - Carver / focused code+TypeScript re-review found a HIGH frontend precedence bug where pending account review could be hidden when `CampaignReview` was already visible; fixed by giving `LaunchAccountReviewPanel` unconditional pending-review precedence and covered by `test/launchAccountReview.test.ts`.
+  - Singer / focused security re-review APPROVED the token fix and found no CRITICAL/HIGH issues.
+  - Carver focused rerun APPROVED the panel precedence fix.
+- Final validation after repairs:
+  - Backend targeted `npx tsx --test test/metaGraphTokenTransport.test.ts test/routes/aventor-stream.test.ts test/mastra/launch-readiness-preflight.test.ts`: PASS, 35 tests.
+  - Backend `npm run typecheck`: PASS; `npm test`: PASS, 1056 tests; `npm run build`: PASS.
+  - Frontend targeted `npx tsx --test test/assistantTyping.test.ts test/launchAccountReview.test.ts test/campaignRestore.test.ts`: PASS, 34 tests.
+  - Frontend `npm run typecheck`: PASS; `npm run test:unit`: PASS, 392 tests; `npm run lint`: PASS; `npm run build`: PASS with existing Vite warnings only.
+  - Docs `python -m json.tool docs.json > $null`: PASS.
+  - `git diff --check` in all three worktrees: PASS with LF-to-CRLF warnings only.
+- QA package refreshed under backend `docs/linear/AVE-13/qa-package/` and code review artifact refreshed at `docs/linear/AVE-13/qa-artifacts/code-review.md`.
+- Browser QA advisory remains: agent-browser captured selected-provider panel rendering and local server health, but full natural Finalize button-to-panel browser click was not rerun after final reviewer repairs because the active browser profile was no longer authenticated.

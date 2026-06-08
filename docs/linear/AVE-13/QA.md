@@ -2,13 +2,13 @@
 
 ## QA goal
 
-Verify that the launch-agent pre-generation flow is data-first, blocks only required Google/Meta account setup, keeps conversion/GBP readiness gaps conversational through the Launch Agent, preserves Final Review, avoids new readiness cards/panels for conversion/GBP, and includes the docs update. Only Google/Meta integration/connect/select recovery has AVE-13 UI scope.
+Verify that the launch-agent pre-generation flow is data-first, always opens selected-provider account review before parameter generation, blocks only missing setup for selected Google/Meta providers, keeps conversion/GBP readiness gaps conversational through the Launch Agent, preserves Final Review, avoids new readiness cards/panels for conversion/GBP, and includes the docs update. Only Google/Meta integration/connect/select recovery has AVE-13 UI scope.
 
 ## Acceptance-criteria coverage matrix
 
 | AC | Requirement | Primary evidence | Secondary evidence |
 |---|---|---|---|
-| 1 | Missing Google or Meta connection/selection blocks whole generation before drafts persist | Backend unit/integration tests around `param_generate`; no draft persistence in blocked cases | Manual chat flow with mocked/seeded account states |
+| 1 | Selected-provider account review appears every finalization and missing selected Google/Meta connection/selection blocks before drafts persist; unselected providers do not block | Backend/frontend tests around `start_finalization` and `param_generate`; no draft persistence in blocked cases | Manual chat flow with mocked/seeded Meta-only, Google-only, and both-provider account states |
 | 2 | Meta Pixel + Google conversion readiness fetched from account data | Service tests mocking Meta Graph + Google Ads GAQL responses | Code review showing shared services reused by route/preflight |
 | 3 | Unknown/unavailable distinct from missing | Tests for API timeout/permission/provider error | Logs show safe reason codes, no token/error body leakage |
 | 4 | Conversion gaps warn and ask switch/continue/pause | Tests for conversion-dependent goals; chat response options | Manual flow confirming options and docs links |
@@ -52,9 +52,9 @@ npm run test:unit
 
 Focused checks if frontend touched:
 
-- Account connection/select blocker recovery still works.
+- Selected-provider account review opens on every Finalize Campaign entry and account connection/select blocker recovery still works.
 - Switch/continue/pause response options render and submit structured decisions using existing option flow; no frontend/backend regex parsing of freeform text is introduced.
-- Only required Google/Meta connect/select recovery has UI scope; conversion/GBP warnings and switch/continue/pause remain Launch Agent conversational/structured-decision behavior, with no new readiness card/panel or Final Review redesign.
+- Only selected-provider Google/Meta connect/select recovery has UI scope; conversion/GBP warnings and switch/continue/pause remain Launch Agent conversational/structured-decision behavior, with no new readiness card/panel or Final Review redesign.
 
 ### Docs (`Aventor-Docs`)
 
@@ -86,7 +86,7 @@ Expected:
 
 - Generation does not proceed.
 - No platform parameter drafts are persisted.
-- Launch Agent names Google Ads setup as required and directs connect/select action.
+- Launch Agent names Google Ads setup as required and the right-side account review panel directs connect/select action.
 - Existing account connection/select UI can recover.
 
 ### Flow 2 — Missing Meta blocks
@@ -95,8 +95,8 @@ Same as Flow 1 but Google ready and Meta missing/unselected.
 
 Expected:
 
-- Whole generation is blocked.
-- Copy names Meta setup.
+- Generation is blocked for the selected Meta campaign.
+- Copy names Meta setup and the right-side account review panel directs connect/select action.
 - No drafts persist.
 
 ### Flow 2B — Both required platforms missing
@@ -105,8 +105,8 @@ Setup: authenticated user/session with neither selected Google Ads customer nor 
 
 Expected:
 
-- Whole generation is blocked.
-- Launch Agent names both missing platforms in one response.
+- Generation is blocked.
+- Launch Agent names both missing selected platforms in one response and the account review panel shows both providers.
 - No drafts persist.
 - User is not forced through a sequential Google-then-Meta failure loop.
 

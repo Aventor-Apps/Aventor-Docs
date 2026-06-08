@@ -14,7 +14,7 @@ Aventor currently asks broad readiness questions around conversion tracking and 
 
 The implementation must:
 
-1. Require both Google Ads and Meta account connection/selection before campaign parameter generation proceeds.
+1. Require connection/selection for every selected launch platform before campaign parameter generation proceeds (Meta for Meta campaigns; Google Ads for Google Search/Performance Max campaigns; both when both are selected).
 2. Fetch conversion readiness from connected accounts when possible: Meta Pixel + Google conversion actions/goals.
 3. Fetch GBP readiness/selection when possible.
 4. Let the launch agent ask only targeted follow-up decisions after data inspection.
@@ -26,7 +26,7 @@ As a campaign creator, when I ask Aventor to prepare a campaign for review, I wa
 
 ## Acceptance criteria
 
-1. **Required dual-platform gate:** before parameter drafts persist, backend verifies required Google Ads + Meta connections/selections. Missing/invalid/unselected Google or Meta blocks the whole generation flow, not just one platform. **Product decision:** this applies even if the user appears to be pursuing a single-platform campaign; Aventor's current generation model assumes Google + Meta readiness as the baseline.
+1. **Selected-platform account review gate:** before parameter drafts persist, the Launch Agent opens the right-side account review panel and requires explicit user confirmation of the provider accounts for the selected launch platforms only. Meta-only campaigns require Meta connection/selection only; Google-only campaigns require Google Ads customer selection only; campaigns with both selected require both. Missing/invalid/unselected accounts for an unselected provider must not block generation.
 2. **Data-first conversion checks:** after required accounts exist, backend fetches Meta Pixel and Google conversion action/goal readiness. Do not ask “do you already have tracking?” when data answers it.
 3. **Unknown is not missing:** provider/API/permission errors produce `unknown`/`unavailable` readiness and targeted fallback questions, not false “missing” facts.
 4. **Conversion gaps warn, not block:** after required accounts exist, missing/unknown tracking does not hard-block generation. For conversion-dependent goals (`conversions`, `leads`, `sales`, or the repo's normalized campaign-goal/objective equivalents), launch agent warns and asks whether to switch goal, continue with warning, or pause for setup.
@@ -41,8 +41,8 @@ As a campaign creator, when I ask Aventor to prepare a campaign for review, I wa
 
 - Data first: inspect connected account data before asking user readiness questions.
 - Run preflight before generation/review; no final-launch revalidation added in AVE-13.
-- Missing Google or Meta required connection/ad-account readiness blocks the whole generation flow.
-- Product decision: both Google + Meta required setup is mandatory before this pre-generation flow, even if a selected-platform subset appears single-platform. If single-platform generation becomes a product path, capture it as separate scope.
+- Missing selected-provider connection/ad-account readiness blocks generation for that selected provider set only.
+- Product decision: account setup is scoped to selected launch platforms. Meta-only does not require Google connection; Google-only does not require Meta connection; both selected requires both.
 - Missing conversion tracking after both platforms are connected warns and asks whether to switch goal.
 - Switch / continue-with-warning / pause semantics are in scope.
 - Setup/install wizard is out of scope and tracked by AVE-40.
@@ -127,9 +127,9 @@ Recommended new/refactored pieces:
 
 Add tests before implementation, e.g. `test/mastra/launch-readiness-preflight.test.ts`, focused provider service tests under `test/lib/`, and any route tests needed for extracted services. Cover:
 
-- missing Google connection/customer blocks whole generation;
-- missing Meta connection/ad account blocks whole generation;
-- both accounts ready + missing Meta Pixel warns for conversion-dependent goals;
+- selected Google connection/customer missing blocks Google-selected generation;
+- selected Meta connection/ad account/page missing blocks Meta-selected generation;
+- selected provider accounts ready + missing relevant conversion tracking warns for conversion-dependent goals;
 - missing Google conversion action/goal warns with Google docs link;
 - Meta Pixel + Google conversion ready yields no conversion warning;
 - API unavailable/permission-limited results are `unknown`/`unavailable`;
@@ -161,22 +161,22 @@ Add tests before implementation, e.g. `test/mastra/launch-readiness-preflight.te
 
 **Owner:** Local Codex backend.
 
-- Run launch-readiness preflight in `runDeterministicParamGeneration()` before parameter draft generation/persistence.
-- If required Google/Meta account readiness fails, return blocking finalization state.
+- Run selected-platform account review and launch-readiness preflight before parameter draft generation/persistence.
+- If selected-provider account readiness fails, return blocking finalization state for only the selected provider(s).
 - If conversion readiness is missing/unknown for conversion-dependent goals, return a warning decision group with switch / continue / pause options.
 - Do not add deterministic regex/string parsing of user utterances for those options. Mastra/orchestrator must interpret natural language or button selections into structured `finalizationDecision` / `finalizationDecisions` payloads; deterministic code only validates and applies those stable decision IDs/actions.
 - Apply structured decisions idempotently:
   - switch: mutate campaign goal, clear/supersede the conversion warning, and let the next deterministic turn generate from the updated goal rather than building a fragile in-turn recursive rerun;
   - continue: mark warning accepted and proceed;
   - pause: stay waiting and persist no drafts.
-- Update launch prompt to align with new backend truth. Replace the current "do not ask the user to connect Meta or Google during Finalize Campaign" instruction with: "Required Google Ads and Meta account connection/selection is enforced by backend preflight before parameter generation. If a required account blocker is active, explain which account setup is needed and direct the user to the existing connect/select UI. Do not proceed with generation until required account blockers are resolved."
-- Replace/bypass broad advisory questions when readiness facts already answer them. If required account blockers are active, suppress marketing-advisory pixel/GBP questions for that turn so the user sees one coherent setup blocker set.
+- Update launch prompt to align with new backend truth. Replace the current "do not ask the user to connect Meta or Google during Finalize Campaign" instruction with: "Selected-platform Google Ads and/or Meta account connection/selection is enforced by backend preflight before parameter generation. If a required account blocker is active, explain which account setup is needed and direct the user to the existing connect/select UI. Do not proceed with generation until required account blockers are resolved."
+- Replace/bypass broad advisory questions when readiness facts already answer them. If selected-provider account blockers are active, suppress marketing-advisory pixel/GBP questions for that turn so the user sees one coherent setup blocker set.
 
 ### Phase 5 - Meta/Google integration UI and frontend contract plumbing
 
 **Owner:** Codex for deterministic contract/state/tests; Open Design only for provider integration UI if existing patterns are insufficient.
 
-- Scope the frontend work to required Google Ads + Meta integration/connect/select recovery only.
+- Scope the frontend work to selected-provider Google Ads and/or Meta integration/connect/select recovery only.
 - Do not add deterministic readiness cards, right-panel warning cards, or Final Review redesign for conversion tracking, Meta Pixel, GBP, or switch/continue/pause questions. Those topics are handled by the Launch Agent conversation using backend facts and structured decisions.
 - Inspect existing chat response-option plumbing and the existing account connect/select flows before editing. Verify options submit structured `finalizationDecision` / `finalizationDecisions` payloads; do not implement frontend/backend regex parsing of freeform user text.
 - If provider setup information needs to appear in the right-side panel, use the existing media/info panel as the visual source of truth: `MainStudio.tsx` wraps the right panel in `bg-gray-50`; `DesignPanel.tsx` uses a light `bg-gray-50` shell with `bg-white`/`bg-zinc-50` cards, gray borders, rounded panels, and gray/black text. Do not apply the dark Open Design artifact background to this panel.
