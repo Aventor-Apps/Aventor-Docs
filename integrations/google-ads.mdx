@@ -1,67 +1,54 @@
 ---
 title: "Google Ads"
-description: "Launch Search and Performance Max campaigns"
-sidebarTitle: "Google Ads (Coming Soon)"
+description: "Launch Search and Performance Max campaigns and get your conversion tracking ready"
+sidebarTitle: "Google Ads"
 ---
 
-<Info>
-Google Ads integration is coming soon. This page will be updated when the feature is available.
-</Info>
-
-## Planned Features
-
-### Search Campaigns
-
-- Text ads with AI-generated headlines and descriptions
-- Keyword targeting based on your brand and audience
-- Automated bidding strategies
-
-### Performance Max Campaigns
-
-- Multi-format campaigns across Google properties
-- Use generated images as creative assets
-- Automated placements (Search, Display, YouTube, Gmail, Maps)
-
-### Display Campaigns
-
-- Banner ads with generated creatives
-- Audience targeting and remarketing
-- Responsive display ad formats
-
-## Current Workaround
-
-Until Google Ads integration is live, you can:
-
-<Steps>
-  <Step title="Generate Images">
-    Create ad visuals in the Aventor Studio.
-  </Step>
-  <Step title="Download">
-    Export images using the download button.
-  </Step>
-  <Step title="Upload to Google Ads">
-    Upload images directly in [Google Ads](https://ads.google.com).
-  </Step>
-  <Step title="Configure Campaign">
-    Set up targeting, bidding, and budget in Google Ads interface.
-  </Step>
-</Steps>
+Aventor launches Google Search and Performance Max campaigns from the same campaign you build for Meta. Before launch, the setup checks confirm your Google Ads account is ready.
 
 ## What You'll Need
 
-When Google Ads integration launches, you'll need:
+- A Google Ads account with billing set up
+- A Google login that can manage that account (connect it in Aventor when setup asks)
+- For campaigns that optimize for website leads or sales, a conversion action that tracks them
 
-- Google Ads account
-- Billing configured in Google Ads
-- At least one active campaign type available
+## Conversion Tracking Readiness
 
-## Stay Updated
+When your campaign optimizes for website leads or sales, Aventor asks you to choose the Google Ads conversion action it should use. Aventor shows which actions recorded conversions in the last 30 days, and walks you through connecting an action that hasn't recorded any yet.
 
-<CardGroup cols={2}>
-  <Card title="Changelog" icon="clock-rotate-left" href="/changelog">
-    Check for updates
-  </Card>
-  <Card title="Contact Support" icon="envelope" href="mailto:info@aventor.ai">
-    Request early access
-  </Card>
-</CardGroup>
+### Enhanced Conversions
+
+Enhanced conversions lets your Google tag send hashed customer details your website already collects, such as an email address in a form, along with each conversion. Google uses them to match more of your conversions to the people who saw your ads, which gives your campaigns more results to optimize for.
+
+Aventor checks whether enhanced conversions is on for your Google Ads account. If it's off, the conversion step shows a notice. The notice never stops you from continuing; turning it on just helps Google count more of your conversions. Aventor only reads this setting and never changes it for you, because turning it on means accepting Google's customer data terms for your account.
+
+To turn it on:
+
+<Steps>
+  <Step title="Open conversion settings">
+    In [Google Ads](https://ads.google.com), go to **Goals**, then **Conversions**, then **Settings**.
+  </Step>
+  <Step title="Turn on enhanced conversions">
+    Find **Enhanced conversions**, turn it on, and accept the customer data terms if Google asks.
+  </Step>
+  <Step title="Choose how your site sends the data">
+    Pick **Google tag** if your site already has the Google tag, then follow Google's steps to confirm which form fields to use.
+  </Step>
+  <Step title="Recheck in Aventor">
+    Come back to the conversion step and choose **Recheck**. The notice changes to "Enhanced conversions is on".
+  </Step>
+</Steps>
+
+<Note>
+If your account's conversions are tracked in a manager account, Aventor can't read the setting and won't show a notice. Check it in the manager account instead.
+</Note>
+
+## Google Business Profile Readiness
+
+Campaigns that show your location can use your Google Business Profile. If setup asks for one, choose the location that matches this campaign, or skip it when the step is optional.
+
+## Need Help?
+
+<Card title="Contact Support" icon="envelope" href="mailto:info@aventor.ai">
+  Our team can help you set up Google Ads conversion tracking
+</Card>
